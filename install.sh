@@ -1,8 +1,8 @@
 #!/bin/sh
 
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
-backup_dir=${HOME}/backup
-mkdir -p $backup_dir
+backup_dir="${HOME}/backup"
+mkdir -p "${backup_dir}"
 
 for file in \
   bash_profile \
@@ -13,10 +13,10 @@ for file in \
   zprofile \
   zshrc
 do
-  echo "Backing up ${HOME}/.${file}/ to ${backup_dir}/.${file}.bak ..."
-  cp "${dotfiles}/.${file} ${backupdir}/.${file}.bak"
+  echo "Backing up ${HOME}/.${file} to ${backup_dir}/.${file}.bak ..."
+  cp "${HOME}/.${file}" "${backup_dir}/.${file}.bak"
   echo "Linking ${HOME}/.${file} to ${dotfiles}/${file} ..."
-  ln -sf "${dotfiles}/${file}" "{$HOME}/.${file}"
+  ln -sf "${dotfiles}/${file}" "${HOME}/.${file}"
 done
 
 if command -v zsh >/dev/null 2>&1; then

@@ -10,7 +10,7 @@ for file in \
   profile \
   rc \
   tmux.conf \
-  zprofile \
+  zshenv \
   zshrc
 do
   echo "Backing up ${HOME}/.${file} to ${backup_dir}/.${file}.bak ..."

@@ -1,3 +1,4 @@
+[ -f ~/.profile ] && . ~/.profile
 [ -f $ENV ] && . $ENV
 
 HISTTIMEFORMAT="%F %T "
@@ -11,6 +12,8 @@ bind 'set show-all-if-ambiguous on'
 stty werase undef
 
 h () { [ $# -eq 0 ] && history 1 || history 1 | grep -i --color "$1"; }
+
+PS1='\[$(tput setaf 8)\]\h:\w\n\[$(tput sgr0)\]\$ '
 
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+arch=$(uname -m)
+bindir=$HOME/etc/bin/${arch}
+
+mkdir -p $bindir
+
+gcc -o ${bindir}/git-branch-stat git-branch-stat.c \
+  $(pkg-config --cflags --libs libgit2)

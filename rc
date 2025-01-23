@@ -1,7 +1,5 @@
 # vim: ft=sh
 
-# termtitle () { echo -en "\033]0;$(dumbprompt.sh)\007"; }
-
 drawline () {
   local COLS="$COLUMNS"
   while ((COLS-- > 0)); do

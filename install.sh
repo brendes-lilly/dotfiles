@@ -12,14 +12,15 @@ for file in \
   bash_profile \
   bashrc \
   profile \
+  rc \
   tmux.conf \
   zprofile \
   zshrc
 do
   echo "Backing up ${HOME}/.${file}/ to ${backup_dir}/.${file}.bak ..."
   cp "${scriptdir}/.${file} ${backupdir}/.${file}.bak"
-  echo "Installing ${file} as .${file} ..."
-  ln -sf "${scriptdir}/${file}" "{$HOME}/.${file}"
+  echo "Copying ${scriptdir}/${file} to ${HOME}/.${file} ..."
+  cp "${scriptdir}/${file}" "{$HOME}/.${file}"
 done
 
 if command -v zsh >/dev/null 2>&1; then

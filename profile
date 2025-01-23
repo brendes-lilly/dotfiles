@@ -1,4 +1,4 @@
-export ENV=$HOME/dotfiles/rc
+export ENV=$HOME/.rc
 export EDITOR=v
 export VISUAL=$EDITOR
 export GREP_COLOR='30;103'

@@ -7,6 +7,8 @@ mkdir -p "${backup_dir}"
 for file in \
   bash_profile \
   bashrc \
+  gitconfig \
+  gitignore \
   profile \
   rc \
   tmux.conf \

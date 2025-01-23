@@ -13,7 +13,22 @@ stty werase undef
 
 h () { [ $# -eq 0 ] && history 1 || history 1 | grep -i --color "$1"; }
 
-PS1='\[$(tput setaf 8)\]\h:\w\n\[$(tput sgr0)\]\$ '
+# hideous function from github
+__git_info() {
+    if [ "$(git config --get devcontainers-theme.hide-status 2>/dev/null)" != 1 ] && [ "$(git config --get codespaces-theme.hide-status 2>/dev/null)" != 1 ]; then
+        BRANCH="$(git --no-optional-locks symbolic-ref --short HEAD 2>/dev/null || git --no-optional-locks rev-parse --short HEAD 2>/dev/null)"
+        if [ "${BRANCH:-}" != "" ]; then
+            printf "[%s" "${BRANCH}"
+            if [ "$(git config --get devcontainers-theme.show-dirty 2>/dev/null)" = 1 ] && \
+                git --no-optional-locks ls-files --error-unmatch -m --directory --no-empty-directory -o --exclude-standard ":/*" > /dev/null 2>&1; then
+                printf " ✗"
+            fi
+            printf "] "
+        fi
+    fi
+}
+
+PS1='\[\033[90m\]\h:\w \[\033[0;1m\]$(__git_info)\[\033[0m\]\[\033[90m\]\n\$\[\033[0m\] '
 
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then

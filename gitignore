@@ -1,0 +1,17 @@
+*.bai
+*.bam
+*.elc
+*.fastq*
+*.out
+*.pyc
+*.sw?
+*.vscode
+*~
+.DS_Store
+._*
+.bloop
+.idea
+.metals
+log.err
+log.out*
+metals.sbt

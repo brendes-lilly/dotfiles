@@ -1,0 +1,51 @@
+# vim: set et ts=2 sw=2 :
+
+[alias]
+  cm      = commit -m
+  amend   = commit --amend
+  ff      = merge --ff-only
+  l       = log --oneline --graph
+  s       = status -sb
+  pub     = push origin HEAD --force-with-lease
+  main    = "!git remote show origin | sed -n '/HEAD branch/s/.*: //p'"
+  nuke    = update-index --force-remove
+  squash  = "!git rebase -v -i $(git main)"
+  sync    = "!git pull origin $(git main) --rebase"
+  unstage = restore --staged
+  untrack = rm --cached
+  update  = "!git pull origin $(git rev-parse --abbrev-ref HEAD) --rebase"
+
+[branch]
+  sort = -committerdate
+
+[tag]
+  sort = taggerdate
+
+[commit]
+  verbose = true
+
+[diff]
+  algorithm = histogram
+
+[help]
+  autocorrect = prompt
+
+[merge]
+  autoStash = true
+  conflictStyle = zdiff3
+  rebase = true
+
+[rebase]
+  autoStash = true
+
+[status]
+  showUntrackedFiles = all
+
+[color "diff"]
+  commit = bold
+
+[color "grep"]
+    filename = "default"
+    linenumber = "default"
+    match = "default 11"
+    separator = "default"

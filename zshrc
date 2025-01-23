@@ -39,6 +39,11 @@ bindkey -e
 
 h () { [ $# -eq 0 ] && history -i 1 || history -i 1 | grep -i --color "$1"; }
 
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd
+
+PROMPT='%F{8}$=%M:%~'' '$'\n''%#%f '
+
 case $TERM in
   dumb)
     unset zle_bracketed_paste

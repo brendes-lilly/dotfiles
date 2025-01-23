@@ -1,10 +1,6 @@
 #!/bin/sh
 
-case "$0" in
-  /*) scriptdir="${0%/*}" ;;
-  *) scriptdir="$PWD/${0#./}" ; scriptdir="${scriptdir%/*}" ;;
-esac
-
+dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 backup_dir=${HOME}/backup
 mkdir -p $backup_dir
 
@@ -18,9 +14,9 @@ for file in \
   zshrc
 do
   echo "Backing up ${HOME}/.${file}/ to ${backup_dir}/.${file}.bak ..."
-  cp "${scriptdir}/.${file} ${backupdir}/.${file}.bak"
-  echo "Linking ${HOME}/.${file} to ${scriptdir}/${file} ..."
-  ln -sf "${scriptdir}/${file}" "{$HOME}/.${file}"
+  cp "${dotfiles}/.${file} ${backupdir}/.${file}.bak"
+  echo "Linking ${HOME}/.${file} to ${dotfiles}/${file} ..."
+  ln -sf "${dotfiles}/${file}" "{$HOME}/.${file}"
 done
 
 if command -v zsh >/dev/null 2>&1; then

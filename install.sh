@@ -19,8 +19,8 @@ for file in \
 do
   echo "Backing up ${HOME}/.${file}/ to ${backup_dir}/.${file}.bak ..."
   cp "${scriptdir}/.${file} ${backupdir}/.${file}.bak"
-  echo "Copying ${scriptdir}/${file} to ${HOME}/.${file} ..."
-  cp "${scriptdir}/${file}" "{$HOME}/.${file}"
+  echo "Linking ${HOME}/.${file} to ${scriptdir}/${file} ..."
+  ln -sf "${scriptdir}/${file}" "{$HOME}/.${file}"
 done
 
 if command -v zsh >/dev/null 2>&1; then

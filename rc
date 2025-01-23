@@ -1,0 +1,49 @@
+# vim: ft=sh
+
+# termtitle () { echo -en "\033]0;$(dumbprompt.sh)\007"; }
+
+drawline () {
+  local COLS="$COLUMNS"
+  while ((COLS-- > 0)); do
+    printf "\\u2500"
+  done
+}
+
+v () {
+  if command -v nvim >/dev/null; then
+    nvim "$@"
+  else
+    vim "$@"
+  fi
+}
+
+view () {
+  if command -v nvim >/dev/null; then
+    nvim -R "$@"
+  else
+    vim -R "$@"
+  fi
+}
+
+csvp () { csv | less -FSX ;}
+tsvp () { tsv | less -FSX ;}
+
+alias cd='cd -P'
+alias ..='cd ..'
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+alias ls='LC_COLLATE=C \ls -F'
+alias l='ls -A'
+alias ll='ls -Al'
+alias ltr='ls -Altr'
+alias fz='fzf -m --bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all --print0 --preview "cat {}" | xargs -0 -o $EDITOR'
+alias grep='grep --color'
+
+case $TERM in
+  dumb)
+    set +o emacs +o vi
+    alias git='git --no-pager'
+    alias ls='ls --color=never'
+    ;;
+esac

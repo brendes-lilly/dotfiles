@@ -5,6 +5,9 @@ case "$0" in
   *) scriptdir="$PWD/${0#./}" ; scriptdir="${scriptdir%/*}" ;;
 esac
 
+backup_dir=${HOME}/backup
+mkdir -p $backup_dir
+
 for file in \
   bash_profile \
   bashrc \
@@ -13,8 +16,10 @@ for file in \
   zprofile \
   zshrc
 do
-  echo "Installing $file as .$file"
-  ln -sf "$scriptdir/$file" "$HOME/.$file"
+  echo "Backing up ${HOME}/.${file}/ to ${backup_dir}/.${file}.bak ..."
+  cp "${scriptdir}/.${file} ${backupdir}/.${file}.bak"
+  echo "Installing ${file} as .${file} ..."
+  ln -sf "${scriptdir}/${file}" "{$HOME}/.${file}"
 done
 
 if command -v zsh >/dev/null 2>&1; then

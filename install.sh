@@ -15,8 +15,8 @@ for file in \
   zshenv \
   zshrc
 do
-    if [ -e "${backup_dir}/.${file}" ]; then
-      echo "${backup_dir}/.${file} appears to exist already. Manually symlink your updated file and be careful not to clobber the original file installed on the system."
+    if [ -e "${backup_dir}/.${file}.bak" ]; then
+      echo "${backup_dir}/.${file}.bak appears to exist already. Manually symlink your updated file and be careful not to clobber the original file installed on the system."
     else
       echo "Backing up ${HOME}/.${file} to ${backup_dir}/.${file}.bak ..."
       cp "${HOME}/.${file}" "${backup_dir}/.${file}.bak"

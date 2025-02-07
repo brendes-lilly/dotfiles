@@ -30,9 +30,9 @@ __git_info() {
 }
 
 if [[ "$TERM_PROGRAM" == "vscode" ]]; then
-  PS1='\[\033[90m\]\h:\w \[\033[0;1m\]$(__git_info)\[\033[0m\]\[\033[90m\]\n\$\[\033[0m\] '
-else
   PS1='\[\033[90m\]\w \[\033[0;1m\]$(__git_info)\[\033[0m\]\[\033[90m\]\n\$\[\033[0m\] '
+else
+  PS1='\[\033[90m\]\h:\w \[\033[0;1m\]$(__git_info)\[\033[0m\]\[\033[90m\]\n\$\[\033[0m\] '
 fi
 
 # Check if the terminal is xterm

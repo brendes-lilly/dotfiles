@@ -29,16 +29,10 @@ __git_info() {
   unset -f __gitinfo
 }
 
-PS1='\[\033[90m\]\h:\w \[\033[0;1m\]$(__git_info)\[\033[0m\]\[\033[90m\]\n\$\[\033[0m\] '
-
-if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-  . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-  . /etc/bash_completion
-  elif [ -r /usr/local/etc/profile.d/bash_completion.sh ]; then
-  . /usr/local/etc/profile.d/bash_completion.sh
-  fi
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+  PS1='\[\033[90m\]\h:\w \[\033[0;1m\]$(__git_info)\[\033[0m\]\[\033[90m\]\n\$\[\033[0m\] '
+else
+  PS1='\[\033[90m\]\w \[\033[0;1m\]$(__git_info)\[\033[0m\]\[\033[90m\]\n\$\[\033[0m\] '
 fi
 
 # Check if the terminal is xterm
@@ -60,3 +54,14 @@ if [[ "$TERM" == "xterm" ]]; then
   # Append to PROMPT_COMMAND to call precmd before displaying the prompt
   PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }precmd"
 fi
+
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+  . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+  . /etc/bash_completion
+  elif [ -r /usr/local/etc/profile.d/bash_completion.sh ]; then
+  . /usr/local/etc/profile.d/bash_completion.sh
+  fi
+fi
+

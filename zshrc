@@ -39,7 +39,14 @@ bindkey -e
 
 h () { [ $# -eq 0 ] && history -i 1 || history -i 1 | grep -i --color "$1"; }
 
-PROMPT='%F{8}$=%M:%~'' '$'\n''%#%f '
+# PROMPT='%F{8}$=%M:%~'' '$'\n''%#%f '
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+  PROMPT='%F{8}%~ %B$(__git_info)%b%f
+%# '
+else
+  PROMPT='%F{8}%m:%~ %B$(__git_info)%b%f
+%# '
+fi
 
 case $TERM in
   dumb)

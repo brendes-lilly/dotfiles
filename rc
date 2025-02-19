@@ -23,8 +23,30 @@ view () {
   fi
 }
 
+csv () { sed 's/,,/, ,/g' "$@" | column -t -s, ;}
+tsv () { column -t -s$'\t' "$@" ;}
 csvp () { csv | less -FSX ;}
 tsvp () { tsv | less -FSX ;}
+
+# hideous function from github codespaces
+__git_info() {
+  # Only show git info if not explicitly hidden.
+  if [ "$(git config --get devcontainers-theme.hide-status 2>/dev/null)" != 1 ] &&
+     [ "$(git config --get codespaces-theme.hide-status 2>/dev/null)" != 1 ]; then
+    branch=$(git --no-optional-locks symbolic-ref --short HEAD 2>/dev/null || \
+             git --no-optional-locks rev-parse --short HEAD 2>/dev/null)
+    if [ -n "$branch" ]; then
+      printf "[%s" "$branch"
+      if [ "$(git config --get devcontainers-theme.show-dirty 2>/dev/null)" = 1 ] &&
+         git --no-optional-locks ls-files --error-unmatch -m --directory --no-empty-directory -o --exclude-standard ":/*" > /dev/null 2>&1; then
+        printf " ✗"
+      fi
+      printf "] "
+    fi
+  fi
+  # Uncomment the following line if you want the function removed after its first use.
+  # unset -f __git_info 2>/dev/null
+}
 
 alias cd='cd -P'
 alias ..='cd ..'

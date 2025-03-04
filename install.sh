@@ -9,11 +9,14 @@ tic -x kitty.terminfo
 for file in \
   bash_profile \
   bashrc \
+  bin \
+  config \
   gitconfig \
   gitignore \
   profile \
   rc \
   tmux.conf \
+  vim \
   zshenv \
   zshrc
 do

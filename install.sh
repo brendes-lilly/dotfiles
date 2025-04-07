@@ -4,8 +4,8 @@ dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 backup_dir="${HOME}/backup"
 mkdir -p "${backup_dir}"
 
-tic -x ghostty.terminfo
-tic -x kitty.terminfo
+tic -x terminfo/ghostty.terminfo
+tic -x terminfo/kitty.terminfo
 
 for file in \
   bash_profile \

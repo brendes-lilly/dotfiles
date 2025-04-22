@@ -9,6 +9,7 @@ else
   set backspace=indent,eol,start
   set hidden
   set hlsearch incsearch
+  set pastetoggle=<C-s>
   set showcmd
   set laststatus=2
   set ttymouse=sgr
@@ -21,7 +22,6 @@ set mouse=a
 set nowrap
 set scrolloff=1
 set showbreak=>\ 
-set pastetoggle=<C-s>
 set smartindent
 set statusline=%F\ %r%m%=L%l/%L\ %y
 let g:netrw_banner = 0
@@ -68,4 +68,4 @@ if !exists('g:vscode')
   Plug 'neovim/nvim-lspconfig'
   Plug 'tpope/vim-commentary'
   call plug#end()
-endif
+

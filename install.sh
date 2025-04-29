@@ -4,8 +4,9 @@ dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 backup_dir="${HOME}/backup"
 mkdir -p "${backup_dir}"
 
-tic -x terminfo/ghostty.terminfo
-tic -x terminfo/kitty.terminfo
+for t in ghostty kitty; do
+  command -v tic >/dev/null 2>&1 && tic -x terminfo/${t}.terminfo || echo "tic not found, skipping terminfo"
+done
 
 for file in \
   bash_profile \

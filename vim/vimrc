@@ -68,4 +68,5 @@ if !exists('g:vscode')
   Plug 'neovim/nvim-lspconfig'
   Plug 'tpope/vim-commentary'
   call plug#end()
+endif
 

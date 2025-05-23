@@ -1,20 +1,5 @@
 # vim: ft=sh
 
-drawline () {
-  local COLS="$COLUMNS"
-  while ((COLS-- > 0)); do
-    printf "\\u2500"
-  done
-}
-
-v () {
-  if command -v nvim >/dev/null; then
-    nvim "$@"
-  else
-    vim "$@"
-  fi
-}
-
 view () {
   if command -v nvim >/dev/null; then
     nvim -R "$@"

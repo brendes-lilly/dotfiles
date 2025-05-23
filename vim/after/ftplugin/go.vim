@@ -1,4 +1,4 @@
-setlocal tabstop=4
+setlocal tabstop=4 noexpandtab shiftwidth=0
 
 augroup gofmt
 	autocmd!

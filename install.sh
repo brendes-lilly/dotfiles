@@ -2,7 +2,7 @@
 
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 backup_dir="${HOME}/backup"
-mkdir -p "${backup_dir}"
+mkdir -p "${backup_dir} ${HOME}/.config"
 
 for t in ghostty kitty; do
   command -v tic >/dev/null 2>&1 &&
@@ -14,7 +14,8 @@ for file in \
   bin \
   .bash_profile \
   .bashrc \
-  .config \
+  .config/git \
+  .config/nvim \
   .gitconfig \
   .gitignore \
   .profile \

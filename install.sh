@@ -11,26 +11,27 @@ for t in ghostty kitty; do
 done
 
 for file in \
-  bash_profile \
-  bashrc \
   bin \
-  config \
-  gitconfig \
-  gitignore \
-  profile \
-  rc \
-  tmux.conf \
-  vim \
-  zshenv \
-  zshrc
+  .bash_profile \
+  .bashrc \
+  .config \
+  .gitconfig \
+  .gitignore \
+  .profile \
+  .rc \
+  .tmux.conf \
+  .vim \
+  .zshenv \
+  .zshrc
 do
-  if [ -e "${backup_dir}/.${file}.bak" ]; then
-    echo "Linking ${HOME}/.${file} to ${dotfiles}/${file} ..."
-    ln -sf "${dotfiles}/${file}" "${HOME}/.${file}"
+  if [ ! -e "${backup_dir}/${file}" ] || [ -e "${backup_dir}/${file}.bak" ]
+  then
+    echo "Linking ${HOME}/${file} to ${dotfiles}/${file} ..."
+    ln -sf "${dotfiles}/${file}" "${HOME}/${file}"
   else
-    echo "Backing up ${HOME}/.${file} to ${backup_dir}/.${file}.bak ..."
-    cp "${HOME}/.${file}" "${backup_dir}/.${file}.bak"
-    echo "Linking ${HOME}/.${file} to ${dotfiles}/${file} ..."
-    ln -sf "${dotfiles}/${file}" "${HOME}/.${file}"
+    echo "Copying ${HOME}/${file} to ${backup_dir}/${file}.bak ..."
+    cp -r "${HOME}/${file}" "${backup_dir}/${file}.bak"
+    echo "Linking ${HOME}/${file} to ${dotfiles}/${file} ..."
+    ln -sf "${dotfiles}/${file}" "${HOME}/${file}"
   fi
 done

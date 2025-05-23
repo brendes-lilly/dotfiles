@@ -1,0 +1,54 @@
+# vim: ft=sh
+
+view () {
+  if command -v nvim >/dev/null; then
+    nvim -R "$@"
+  else
+    vim -R "$@"
+  fi
+}
+
+csv () { sed 's/,,/, ,/g' "$@" | column -t -s, ;}
+tsv () { column -t -s$'\t' "$@" ;}
+csvp () { csv "$@" | less -FSX ;}
+tsvp () { tsv "$@" | less -FSX ;}
+
+# hideous function from github codespaces
+__git_info() {
+  # Only show git info if not explicitly hidden.
+  if [ "$(git config --get devcontainers-theme.hide-status 2>/dev/null)" != 1 ] &&
+     [ "$(git config --get codespaces-theme.hide-status 2>/dev/null)" != 1 ]; then
+    branch=$(git --no-optional-locks symbolic-ref --short HEAD 2>/dev/null || \
+             git --no-optional-locks rev-parse --short HEAD 2>/dev/null)
+    if [ -n "$branch" ]; then
+      printf "[%s" "$branch"
+      if [ "$(git config --get devcontainers-theme.show-dirty 2>/dev/null)" = 1 ] &&
+         git --no-optional-locks ls-files --error-unmatch -m --directory --no-empty-directory -o --exclude-standard ":/*" > /dev/null 2>&1; then
+        printf " ✗"
+      fi
+      printf "] "
+    fi
+  fi
+  # Uncomment the following line if you want the function removed after its first use.
+  # unset -f __git_info 2>/dev/null
+}
+
+ls_cmd="LC_COLLATE=C \ls -F --color=never"
+alias cd="cd -P"
+alias ..="cd .."
+alias cp="cp -i"
+alias mv="mv -i"
+alias rm="rm -i"
+alias ls="$ls_cmd"
+alias l="$ls_cmd -A"
+alias ll="$ls_cmd -Al"
+alias ltr="$ls_cmd -Altr"
+alias fz='fzf -m --bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all --print0 --preview "cat {}" | xargs -0 -o $EDITOR'
+alias grep='grep --color'
+
+case $TERM in
+  dumb)
+    set +o emacs +o vi
+    alias git='git --no-pager'
+    ;;
+esac

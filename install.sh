@@ -2,7 +2,7 @@
 
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 backup_dir="${HOME}/backup"
-mkdir -p "${backup_dir} ${HOME}/.config"
+mkdir -p "${backup_dir}" "${HOME}/.config"
 
 for t in ghostty kitty; do
   command -v tic >/dev/null 2>&1 &&

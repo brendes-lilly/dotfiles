@@ -41,6 +41,7 @@ hi! link scalaTypeTypePostDeclaration Normal
 hi! link shCommandSub Normal
 hi! link vimMapModKey Constant
 hi! link vimNotation Constant
+syn region shCommandSub matchgroup=String start="\$(" end=")" contains=NONE
 
 " ui
 hi Error ctermfg=1 ctermbg=none cterm=underline
@@ -52,8 +53,8 @@ hi DiffAdd ctermfg=6 ctermbg=none cterm=bold
 hi DiffChange ctermfg=3 ctermbg=none cterm=bold
 hi DiffDelete ctermfg=1 ctermbg=none cterm=bold
 hi Question ctermfg=2 ctermbg=none cterm=none
-hi Search ctermfg=8 ctermbg=none cterm=reverse
-hi CurSearch ctermfg=0 ctermbg=11 cterm=none
+hi CurSearch ctermfg=8 ctermbg=none cterm=reverse
+hi Search ctermfg=0 ctermbg=11 cterm=none
 hi StatusLine ctermfg=none ctermbg=7 cterm=none
 hi StatusLineNC ctermfg=8 ctermbg=7 cterm=none
 hi TabLineSel ctermfg=none ctermbg=7 cterm=underline

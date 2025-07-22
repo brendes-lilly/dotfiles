@@ -1,0 +1,15 @@
+#!/bin/sh
+if [ $# -ne 2 ]; then
+  echo "Print markdown list of PRs merged into your branch since the last one for easy pasting into a GitHub PR message."
+  echo
+  echo "Usage: $(basename $0) <dest-branch> <src-branch>"
+  echo "Example: $(basename $0) prod dev"
+  exit 1
+fi
+
+dest=$1
+src=$2
+
+git log origin/${dest}..origin/${src} \
+  --merges --pretty=format:"%h %s" \
+  | awk '{print "-", $5}'

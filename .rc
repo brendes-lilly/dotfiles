@@ -45,7 +45,7 @@ alias ll="$ls_cmd -Al"
 alias ltr="$ls_cmd -Altr"
 alias fz='fzf -m --bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all --print0 --preview "cat {}" | xargs -0 -o $EDITOR'
 alias grep='grep --color'
-alias dotenv="export $(grep -v '^#' .env | xargs)"
+alias denv="export $(grep -v '^#' .env | xargs)"
 
 case $TERM in
   dumb)

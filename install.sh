@@ -1,38 +1,91 @@
 #!/bin/sh
 
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
-backup_dir="${HOME}/backup"
-mkdir -p "${backup_dir}" "${HOME}/.config"
+manifest_file="manifest"
+cd "$dotfiles"
 
-for t in ghostty kitty; do
-  command -v tic >/dev/null 2>&1 &&
-    tic -x terminfo/${t}.terminfo ||
-    echo "tic not found, skipping terminfo"
-done
+# Check for dry-run
+dry_run=false
+if [ "$1" = "-d" ]; then
+    dry_run=true
+    echo "DRY RUN: No changes will be made."
+    echo
+fi
 
-for file in \
-  bin \
-  .bash_profile \
-  .bashrc \
-  .config/git \
-  .config/nvim \
-  .gitconfig \
-  .gitignore \
-  .profile \
-  .rc \
-  .tmux.conf \
-  .vim \
-  .zshenv \
-  .zshrc
-do
-  if [ ! -e "${backup_dir}/${file}" ] || [ -e "${backup_dir}/${file}.bak" ]
-  then
-    echo "Linking ${HOME}/${file} to ${dotfiles}/${file} ..."
-    ln -sf "${dotfiles}/${file}" "${HOME}/${file}"
-  else
-    echo "Copying ${HOME}/${file} to ${backup_dir}/${file}.bak ..."
-    cp -r "${HOME}/${file}" "${backup_dir}/${file}.bak"
-    echo "Linking ${HOME}/${file} to ${dotfiles}/${file} ..."
-    ln -sf "${dotfiles}/${file}" "${HOME}/${file}"
-  fi
-done
+if command -v tic >/dev/null 2>&1; then
+    for t in ghostty kitty; do
+        if [ -f "terminfo/${t}.terminfo" ]; then
+            if $dry_run; then
+                echo "Would compile: terminfo/${t}.terminfo"
+            else
+                echo "Compiling terminfo: ${t}"
+                tic -x "terminfo/${t}.terminfo"
+            fi
+        fi
+    done
+    echo
+fi
+
+if [ -f "$manifest_file" ]; then
+    echo "Fetching files from source repo..."
+    github_user="brendes"
+    repo="usr"
+    while IFS= read -r src; do
+        case "$src" in
+            ""|\#*) continue ;;
+        esac
+        src="${src%%#*}"
+        src="${src%% *}"
+        [ -z "$src" ] && continue
+        if $dry_run; then
+            echo "Would fetch: $src"
+        else
+            echo "Fetching: $src"
+            mkdir -pv "$(dirname "$src")"
+            curl -L "https://raw.githubusercontent.com/$github_user/$repo/main/$src" \
+                 -o "$src"
+        fi
+    done < "$manifest_file"
+    echo
+fi
+
+if [ -d "${dotfiles}/etc" ]; then
+    for file in "${dotfiles}"/etc/*; do
+        [ -e "$file" ] || continue
+        name=$(basename "$file")
+        [ "$name" = "config" ] && continue
+        dest="${HOME}/.${name}"
+        if $dry_run; then
+            echo "Would link: $dest -> $file"
+        else
+            ln -sfv "$file" "$dest"
+        fi
+    done
+fi
+
+if [ -d "${dotfiles}/etc/config" ]; then
+    if ! $dry_run; then
+        mkdir -pv "${HOME}/.config"
+    fi
+    for item in "${dotfiles}"/etc/config/*; do
+        [ -e "$item" ] || continue
+        name=$(basename "$item")
+        dest="${HOME}/.config/${name}"
+        if $dry_run; then
+            echo "Would link: $dest -> $item"
+        else
+            ln -sfv "$item" "$dest"
+        fi
+    done
+fi
+
+if [ -d "${dotfiles}/bin" ]; then
+    dest="${HOME}/bin"
+    if $dry_run; then
+        echo "Would link: $dest -> ${dotfiles}/bin"
+    else
+        ln -sfv "${dotfiles}/bin" "$dest"
+    fi
+fi
+
+$dry_run && echo && echo "Dry run complete. No changes made."

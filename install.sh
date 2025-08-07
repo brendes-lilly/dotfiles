@@ -77,6 +77,10 @@ if [ -d "${dotfiles}/etc" ]; then
         if $dry_run; then
             echo "Would link: $dest -> $file"
         else
+            # Remove existing directory if it's not a symlink
+            if [ -d "$dest" ] && [ ! -L "$dest" ]; then
+                rm -rf "$dest"
+            fi
             ln -sfv "$file" "$dest"
         fi
     done
@@ -93,6 +97,10 @@ if [ -d "${dotfiles}/etc/config" ]; then
         if $dry_run; then
             echo "Would link: $dest -> $item"
         else
+            # Remove existing directory if it's not a symlink
+            if [ -d "$dest" ] && [ ! -L "$dest" ]; then
+                rm -rf "$dest"
+            fi
             ln -sfv "$item" "$dest"
         fi
     done
@@ -103,6 +111,7 @@ if [ -d "${dotfiles}/bin" ]; then
     if $dry_run; then
         echo "Would link: $dest -> ${dotfiles}/bin"
     else
+        chmod +x "${dotfiles}"/bin/*
         ln -sfv "${dotfiles}/bin" "$dest"
     fi
 fi

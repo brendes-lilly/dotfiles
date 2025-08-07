@@ -2,14 +2,33 @@
 
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 manifest_file="manifest"
+pkg="tmux tree neovim jq"
+
 cd "$dotfiles"
 
-# Check for dry-run
 dry_run=false
 if [ "$1" = "-d" ]; then
     dry_run=true
     echo "DRY RUN: No changes will be made."
     echo
+fi
+
+if ! command -v apt >/dev/null 2>&1; then
+    echo "apt not found, skipping package installation"
+    return
+fi
+if $dry_run; then
+    echo "Would install packages: $pkg"
+    return
+fi
+if [ "$(id -u)" = "0" ]; then
+    apt update
+    apt install -y $pkg
+elif command -v sudo >/dev/null 2>&1; then
+    sudo apt update
+    sudo apt install -y $pkg
+else
+    echo "Not root and sudo not available, skipping package installation"
 fi
 
 if command -v tic >/dev/null 2>&1; then

@@ -116,4 +116,6 @@ if [ -d "${dotfiles}/bin" ]; then
     fi
 fi
 
+git config --global --unset-all url."git@github.com:".insteadof
+
 $dry_run && echo && echo "Dry run complete. No changes made."

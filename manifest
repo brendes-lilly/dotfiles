@@ -18,7 +18,7 @@ etc/bash_profile
 etc/bashrc
 etc/config/git/config
 etc/config/git/ignore
-etc/config/nvim/init.vim
+etc/config/nvim/init.lua
 etc/profile
 etc/rc
 etc/tmux.conf

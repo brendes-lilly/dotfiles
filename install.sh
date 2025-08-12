@@ -2,7 +2,7 @@
 
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 manifest_file="manifest"
-pkg="tmux tree neovim jq"
+pkg="zsh tmux tree neovim jq"
 
 cd "$dotfiles"
 

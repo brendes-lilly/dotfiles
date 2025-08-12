@@ -15,7 +15,7 @@ fi
 
 link_into() {
   src=$1 dest=$2
-  { [ -e "$dest" ] || [ -L "$dest" ] ; } && rm -rf -- "$dest"
+  { [ -e "$dest" ] || [ -L "$dest" ]; } && rm -rf -- "$dest"
   ln -sfnvT -- "$src" "$dest" 2>/dev/null || ln -sfnv -- "$src" "$dest"
 }
 
@@ -120,6 +120,11 @@ if [ -d "${dotfiles}/bin" ]; then
   fi
 fi
 
-git config --global --unset-all url."git@github.com:".insteadof
+key='url.git@github.com:.insteadof'
+if $dry_run; then
+  echo "Would run: git config --global --unset-all $key"
+else
+  git config --global --unset-all "$key"
+fi
 
 $dry_run && echo && echo "Dry run complete. No changes made."

@@ -13,13 +13,17 @@ if [ "$1" = "-d" ]; then
   echo
 fi
 
+link_into() {
+  src=$1 dest=$2
+  { [ -e "$dest" ] || [ -L "$dest" ] ; } && rm -rf -- "$dest"
+  ln -sfnT -- "$src" "$dest" 2>/dev/null || ln -sfn -- "$src" "$dest"
+}
+
 if ! command -v apt >/dev/null 2>&1; then
   echo "apt not found, skipping package installation"
-  return
 fi
 if $dry_run; then
   echo "Would install packages: $pkg"
-  return
 fi
 if [ "$(id -u)" = "0" ]; then
   apt update
@@ -81,7 +85,7 @@ if [ -d "${dotfiles}/etc" ]; then
       if [ -d "$dest" ] && [ ! -L "$dest" ]; then
         rm -rf "$dest"
       fi
-      ln -sfv "$file" "$dest"
+      link_into "$file" "$dest"
     fi
   done
 fi
@@ -101,7 +105,7 @@ if [ -d "${dotfiles}/etc/config" ]; then
       if [ -d "$dest" ] && [ ! -L "$dest" ]; then
         rm -rf "$dest"
       fi
-      ln -sfv "$item" "$dest"
+      link_into "$item" "$dest"
     fi
   done
 fi
@@ -112,7 +116,7 @@ if [ -d "${dotfiles}/bin" ]; then
     echo "Would link: $dest -> ${dotfiles}/bin"
   else
     chmod +x "${dotfiles}"/bin/*
-    ln -sfv "${dotfiles}/bin" "$dest"
+    link_into "${dotfiles}/bin" "$dest"
   fi
 fi
 

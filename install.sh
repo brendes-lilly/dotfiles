@@ -16,7 +16,7 @@ fi
 link_into() {
   src=$1 dest=$2
   { [ -e "$dest" ] || [ -L "$dest" ] ; } && rm -rf -- "$dest"
-  ln -sfnT -- "$src" "$dest" 2>/dev/null || ln -sfn -- "$src" "$dest"
+  ln -sfnvT -- "$src" "$dest" 2>/dev/null || ln -sfnv -- "$src" "$dest"
 }
 
 if ! command -v apt >/dev/null 2>&1; then

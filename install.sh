@@ -49,10 +49,12 @@ if command -v tic >/dev/null 2>&1; then
   echo
 fi
 
+# After fetching files from manifest, track what should exist
 if [ -f "$manifest_file" ]; then
   echo "Fetching files from source repo..."
   github_user="brendes"
   repo="usr"
+  manifest_files=""
   while IFS= read -r src; do
     case "$src" in
     "" | \#*) continue ;;
@@ -60,6 +62,10 @@ if [ -f "$manifest_file" ]; then
     src="${src%%#*}"
     src="${src%% *}"
     [ -z "$src" ] && continue
+
+    # Add to tracking list
+    manifest_files="${manifest_files}${src}\n"
+
     if $dry_run; then
       echo "Would fetch: $src"
     else
@@ -70,6 +76,47 @@ if [ -f "$manifest_file" ]; then
     fi
   done <"$manifest_file"
   echo
+
+  # Clean up files not in manifest
+  if [ -d "etc" ]; then
+    echo "Cleaning up files not in manifest..."
+    find etc -type f | while read -r file; do
+      # Check if file is in manifest
+      if ! printf "%s" "$manifest_files" | grep -Fxq "$file"; then
+        # Remove the file
+        if $dry_run; then
+          echo "Would remove: $file"
+        else
+          echo "Removing: $file"
+          rm -f "$file"
+        fi
+
+        # Remove corresponding symlink
+        base_name=$(echo "$file" | sed 's|^etc/||')
+        if [ "$base_name" = "${base_name#config/}" ]; then
+          link_dest="${HOME}/.${base_name}"
+        else
+          link_dest="${HOME}/.config/${base_name#config/}"
+        fi
+
+        if [ -L "$link_dest" ]; then
+          target=$(readlink "$link_dest")
+          if [ "$target" = "${dotfiles}/$file" ]; then
+            if $dry_run; then
+              echo "Would unlink: $link_dest"
+            else
+              echo "Unlinking: $link_dest"
+              rm -f "$link_dest"
+            fi
+          fi
+        fi
+      fi
+    done
+    # Remove empty directories
+    if ! $dry_run; then
+      find etc -type d -empty -delete
+    fi
+  fi
 fi
 
 if [ -d "${dotfiles}/etc" ]; then

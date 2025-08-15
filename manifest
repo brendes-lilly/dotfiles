@@ -22,7 +22,6 @@ etc/config/nvim/init.lua
 etc/profile
 etc/rc
 etc/tmux.conf
-etc/vim/after/ftplugin/asciidoc/folding.vim.XXX
 etc/vim/after/ftplugin/c.vim
 etc/vim/after/ftplugin/gitcommit.vim
 etc/vim/after/ftplugin/go.vim
@@ -37,10 +36,8 @@ etc/vim/colors/acme.vim
 etc/vim/colors/calm.vim
 etc/vim/plugin/bracketed-paste.vim
 etc/vim/plugin/colorscheme.vim
-etc/vim/plugin/git-auto-commit.vim
 etc/vim/plugin/statusline-git-branch.vim
 etc/vim/plugin/synstack.vim
-etc/vim/plugin/vim-plug-plugins.vim
 etc/vim/vimrc
 etc/zprofile
 etc/zshrc

@@ -4,7 +4,11 @@ dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 manifest_file="manifest"
 pkg="zsh tmux tree neovim jq"
 
-cd "$dotfiles"
+link_into() {
+  src=$1 dest=$2
+  { [ -e "$dest" ] || [ -L "$dest" ]; } && rm -rf -- "$dest"
+  ln -sfnvT -- "$src" "$dest" 2>/dev/null || ln -sfnv -- "$src" "$dest"
+}
 
 dry_run=false
 if [ "$1" = "-d" ]; then
@@ -13,11 +17,11 @@ if [ "$1" = "-d" ]; then
   echo
 fi
 
-link_into() {
-  src=$1 dest=$2
-  { [ -e "$dest" ] || [ -L "$dest" ]; } && rm -rf -- "$dest"
-  ln -sfnvT -- "$src" "$dest" 2>/dev/null || ln -sfnv -- "$src" "$dest"
-}
+if $dry_run; then
+  echo "cd $dotfiles"
+else
+  cd "$dotfiles"
+fi
 
 if ! command -v apt >/dev/null 2>&1; then
   echo "apt not found, skipping package installation"

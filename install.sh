@@ -20,23 +20,23 @@ fi
 if $dry_run; then
   echo "cd $dotfiles"
 else
-  cd "$dotfiles"
+  cd "$dotfiles" || exit 1 # Exit if cd fails
 fi
 
-if ! command -v apt >/dev/null 2>&1; then
-  echo "apt not found, skipping package installation"
-fi
-if $dry_run; then
-  echo "Would install packages: $pkg"
-fi
-if [ "$(id -u)" = "0" ]; then
-  apt update
-  apt install -y $pkg
-elif command -v sudo >/dev/null 2>&1; then
-  sudo apt update
-  sudo apt install -y $pkg
+if command -v apt >/dev/null 2>&1; then
+  if $dry_run; then
+    echo "Would install packages: $pkg"
+  elif [ "$(id -u)" = "0" ]; then
+    apt update
+    apt install -y $pkg
+  elif command -v sudo >/dev/null 2>&1; then
+    sudo apt update
+    sudo apt install -y $pkg
+  else
+    echo "Not root and sudo not available, skipping package installation"
+  fi
 else
-  echo "Not root and sudo not available, skipping package installation"
+  echo "apt not found, skipping package installation"
 fi
 
 if command -v tic >/dev/null 2>&1; then
@@ -53,12 +53,11 @@ if command -v tic >/dev/null 2>&1; then
   echo
 fi
 
-# After fetching files from manifest, track what should exist
 if [ -f "$manifest_file" ]; then
   echo "Fetching files from source repo..."
   github_user="brendes"
   repo="usr"
-  manifest_files=""
+
   while IFS= read -r src; do
     case "$src" in
     "" | \#*) continue ;;
@@ -66,9 +65,6 @@ if [ -f "$manifest_file" ]; then
     src="${src%%#*}"
     src="${src%% *}"
     [ -z "$src" ] && continue
-
-    # Add to tracking list
-    manifest_files="${manifest_files}${src}\n"
 
     if $dry_run; then
       echo "Would fetch: $src"
@@ -85,8 +81,8 @@ if [ -f "$manifest_file" ]; then
   if [ -d "etc" ]; then
     echo "Cleaning up files not in manifest..."
     find etc -type f | while read -r file; do
-      # Check if file is in manifest
-      if ! printf "%s" "$manifest_files" | grep -Fxq "$file"; then
+      # Check if file is in manifest directly
+      if ! grep -Fxq "$file" "$manifest_file"; then
         # Remove the file
         if $dry_run; then
           echo "Would remove: $file"
@@ -96,7 +92,7 @@ if [ -f "$manifest_file" ]; then
         fi
 
         # Remove corresponding symlink
-        base_name=$(echo "$file" | sed 's|^etc/||')
+        base_name="${file#etc/}"
         if [ "$base_name" = "${base_name#config/}" ]; then
           link_dest="${HOME}/.${base_name}"
         else
@@ -116,7 +112,6 @@ if [ -f "$manifest_file" ]; then
         fi
       fi
     done
-    # Remove empty directories
     if ! $dry_run; then
       find etc -type d -empty -delete
     fi
@@ -144,6 +139,8 @@ fi
 if [ -d "${dotfiles}/etc/config" ]; then
   if ! $dry_run; then
     mkdir -pv "${HOME}/.config"
+  else
+    echo "Would create: ${HOME}/.config"
   fi
   for item in "${dotfiles}"/etc/config/*; do
     [ -e "$item" ] || continue
@@ -175,7 +172,7 @@ key='url.git@github.com:.insteadof'
 if $dry_run; then
   echo "Would run: git config --global --unset-all $key"
 else
-  git config --global --unset-all "$key"
+  git config --global --unset-all "$key" 2>/dev/null || true
 fi
 
 $dry_run && echo && echo "Dry run complete. No changes made."

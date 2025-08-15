@@ -13,6 +13,7 @@ bin/tsv
 bin/urlclean
 bin/v
 bin/vc/gg
+bin/vc/git-prompt
 bin/vc/pr-summary
 etc/bash_profile
 etc/bashrc

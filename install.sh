@@ -28,10 +28,16 @@ if command -v apt >/dev/null 2>&1; then
     echo "Would install packages: $pkg"
   elif [ "$(id -u)" = "0" ]; then
     DEBIAN_FRONTEND=noninteractive apt update
-    DEBIAN_FRONTEND=noninteractive apt install -y $pkg
+    DEBIAN_FRONTEND=noninteractive apt install -y \
+      -o Dpkg::Options::="--force-confold" \
+      -o Dpkg::Options::="--force-confdef" \
+      $pkg
   elif command -v sudo >/dev/null 2>&1; then
     sudo DEBIAN_FRONTEND=noninteractive apt update
-    sudo DEBIAN_FRONTEND=noninteractive apt install -y $pkg
+    sudo DEBIAN_FRONTEND=noninteractive apt install -y \
+      -o Dpkg::Options::="--force-confold" \
+      -o Dpkg::Options::="--force-confdef" \
+      $pkg
   else
     echo "Not root and sudo not available, skipping package installation"
   fi

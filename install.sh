@@ -124,8 +124,26 @@ if [ -f "$manifest_file" ]; then
   fi
 fi
 
+if [ -d "${dotfiles}/bin" ]; then
+  if $dry_run; then
+    echo "Would sync: ${dotfiles}/bin -> ${HOME}/usr/bin"
+  else
+    mkdir -p "${HOME}/usr"
+    rsync -a --chmod=D755,F755 "${dotfiles}/bin/" "${HOME}/usr/bin/"
+  fi
+fi
+
 if [ -d "${dotfiles}/etc" ]; then
-  for file in "${dotfiles}"/etc/*; do
+  if $dry_run; then
+    echo "Would sync: ${dotfiles}/etc -> ${HOME}/usr/etc"
+  else
+    mkdir -p "${HOME}/usr"
+    rsync -a "${dotfiles}/etc/" "${HOME}/usr/etc/"
+  fi
+fi
+
+if [ -d "${HOME}/usr/etc" ]; then
+  for file in "${HOME}/usr/etc"/*; do
     [ -e "$file" ] || continue
     name=$(basename "$file")
     [ "$name" = "config" ] && continue
@@ -133,7 +151,6 @@ if [ -d "${dotfiles}/etc" ]; then
     if $dry_run; then
       echo "Would link: $dest -> $file"
     else
-      # Remove existing directory if it's not a symlink
       if [ -d "$dest" ] && [ ! -L "$dest" ]; then
         rm -rf "$dest"
       fi
@@ -142,20 +159,19 @@ if [ -d "${dotfiles}/etc" ]; then
   done
 fi
 
-if [ -d "${dotfiles}/etc/config" ]; then
+if [ -d "${HOME}/usr/etc/config" ]; then
   if ! $dry_run; then
     mkdir -pv "${HOME}/.config"
   else
     echo "Would create: ${HOME}/.config"
   fi
-  for item in "${dotfiles}"/etc/config/*; do
+  for item in "${HOME}/usr/etc/config"/*; do
     [ -e "$item" ] || continue
     name=$(basename "$item")
     dest="${HOME}/.config/${name}"
     if $dry_run; then
       echo "Would link: $dest -> $item"
     else
-      # Remove existing directory if it's not a symlink
       if [ -d "$dest" ] && [ ! -L "$dest" ]; then
         rm -rf "$dest"
       fi
@@ -164,22 +180,11 @@ if [ -d "${dotfiles}/etc/config" ]; then
   done
 fi
 
-if [ -d "${dotfiles}/bin" ]; then
-  dest="${HOME}/bin"
-  if $dry_run; then
-    echo "Would link: $dest -> ${dotfiles}/bin"
-  else
-    find "${dotfiles}/bin" -type f -exec chmod +x {} \;
-    link_into "${dotfiles}/bin" "$dest"
-    for p in bio vc; do export PATH=$HOME/bin/$p:$PATH; done
-  fi
+key='url.git@github.com:.insteadOf'
+if $dry_run; then
+  echo "Would run: git config --global --unset-all $key"
+else
+  git config --global --unset-all "$key" 2>/dev/null || true
 fi
-
-# key='url.git@github.com:.insteadof'
-# if $dry_run; then
-#   echo "Would run: git config --global --unset-all $key"
-# else
-#   git config --global --unset-all "$key" 2>/dev/null || true
-# fi
 
 $dry_run && echo && echo "Dry run complete. No changes made."

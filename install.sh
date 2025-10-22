@@ -171,15 +171,15 @@ if [ -d "${dotfiles}/bin" ]; then
   else
     find "${dotfiles}/bin" -type f -exec chmod +x {} \;
     link_into "${dotfiles}/bin" "$dest"
+    for p in bio vc; do export PATH=$HOME/bin/$p:$PATH; done
   fi
 fi
 
-key='url.git@github.com:.insteadof'
-if $dry_run; then
-  echo "Would run: git config --global --unset-all $key"
-else
-  git config --global --unset-all "$key" 2>/dev/null || true
-  for p in bio vc; do export PATH=$HOME/bin/$p:$PATH; done
-fi
+# key='url.git@github.com:.insteadof'
+# if $dry_run; then
+#   echo "Would run: git config --global --unset-all $key"
+# else
+#   git config --global --unset-all "$key" 2>/dev/null || true
+# fi
 
 $dry_run && echo && echo "Dry run complete. No changes made."

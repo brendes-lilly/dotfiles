@@ -61,7 +61,7 @@ fi
 
 if [ -f "$manifest_file" ]; then
   echo "Fetching files from source repo..."
-  github_user="brendes"
+  user="brendes"
   repo="usr"
 
   while IFS= read -r src; do
@@ -77,7 +77,7 @@ if [ -f "$manifest_file" ]; then
     else
       echo "Fetching: $src"
       mkdir -pv "$(dirname "$src")"
-      curl -L "https://raw.githubusercontent.com/$github_user/$repo/main/$src" \
+      curl -L "https://raw.githubusercontent.com/$user/$repo/main/$src" \
         -o "$src"
     fi
   done <"$manifest_file"
@@ -169,7 +169,7 @@ if [ -d "${dotfiles}/bin" ]; then
   if $dry_run; then
     echo "Would link: $dest -> ${dotfiles}/bin"
   else
-    chmod +x "${dotfiles}"/bin/*
+    find "${dotfiles}/bin" -type f -exec chmod +x {} \;
     link_into "${dotfiles}/bin" "$dest"
   fi
 fi

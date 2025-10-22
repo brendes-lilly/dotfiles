@@ -1,6 +1,7 @@
 #!/bin/sh
 
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
+dotfiles_home="$HOME/usr"
 manifest_file="manifest"
 pkg="zsh tmux tree neovim jq"
 
@@ -20,11 +21,26 @@ fi
 if $dry_run; then
   echo "cd $dotfiles"
 else
-  cd "$dotfiles" || exit 1 # Exit if cd fails
+  cd "$dotfiles" || exit 1
 fi
 
+pkg_to_install=""
+for p in $pkg; do
+  case $p in
+    neovim) cmd=nvim ;;
+    *) cmd=$p ;;
+  esac
+
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    pkg_to_install="$pkg_to_install $p"
+  fi
+done
+pkg="$pkg_to_install"
+
 if command -v apt >/dev/null 2>&1; then
-  if $dry_run; then
+  if [ -z "$pkg" ]; then
+    echo "All packages already installed, skipping apt install"
+  elif $dry_run; then
     echo "Would install packages: $pkg"
   elif [ "$(id -u)" = "0" ]; then
     DEBIAN_FRONTEND=noninteractive apt update
@@ -126,24 +142,24 @@ fi
 
 if [ -d "${dotfiles}/bin" ]; then
   if $dry_run; then
-    echo "Would sync: ${dotfiles}/bin -> ${HOME}/usr/bin"
+    echo "Would sync: ${dotfiles}/bin -> ${dotfiles_home}/bin"
   else
-    mkdir -p "${HOME}/usr"
-    rsync -a --chmod=D755,F755 "${dotfiles}/bin/" "${HOME}/usr/bin/"
+    mkdir -p "${dotfiles_home}"
+    rsync -a --chmod=D755,F755 "${dotfiles}/bin/" "${dotfiles_home}/bin/"
   fi
 fi
 
 if [ -d "${dotfiles}/etc" ]; then
   if $dry_run; then
-    echo "Would sync: ${dotfiles}/etc -> ${HOME}/usr/etc"
+    echo "Would sync: ${dotfiles}/etc -> ${dotfiles_home}/etc"
   else
-    mkdir -p "${HOME}/usr"
-    rsync -a "${dotfiles}/etc/" "${HOME}/usr/etc/"
+    mkdir -p "${dotfiles_home}"
+    rsync -a "${dotfiles}/etc/" "${dotfiles_home}/etc/"
   fi
 fi
 
-if [ -d "${HOME}/usr/etc" ]; then
-  for file in "${HOME}/usr/etc"/*; do
+if [ -d "${dotfiles_home}/etc" ]; then
+  for file in "${dotfiles_home}/etc"/*; do
     [ -e "$file" ] || continue
     name=$(basename "$file")
     [ "$name" = "config" ] && continue
@@ -159,13 +175,13 @@ if [ -d "${HOME}/usr/etc" ]; then
   done
 fi
 
-if [ -d "${HOME}/usr/etc/config" ]; then
+if [ -d "${dotfiles_home}/etc/config" ]; then
   if ! $dry_run; then
     mkdir -pv "${HOME}/.config"
   else
     echo "Would create: ${HOME}/.config"
   fi
-  for item in "${HOME}/usr/etc/config"/*; do
+  for item in "${dotfiles_home}/etc/config"/*; do
     [ -e "$item" ] || continue
     name=$(basename "$item")
     dest="${HOME}/.config/${name}"

@@ -203,4 +203,25 @@ else
   git config --file $HOME/usr/etc/config/git/config --unset-all 'url.git@github.com:.insteadOf'
 fi
 
+if command -v zsh >/dev/null 2>&1; then
+  current_shell=$(getent passwd "$(whoami)" | cut -d: -f7)
+  zsh_path=$(command -v zsh)
+  if [ "$current_shell" != "$zsh_path" ]; then
+    if $dry_run; then
+      echo "Would change shell to: $zsh_path"
+    else
+      echo "Changing default shell to zsh..."
+      if [ "$(id -u)" = "0" ]; then
+        chsh -s "$zsh_path"
+      elif command -v sudo >/dev/null 2>&1; then
+        sudo chsh -s "$zsh_path" "$(whoami)"
+      else
+        echo "Cannot change shell: not root and sudo not available"
+      fi
+    fi
+  fi
+else
+  echo "zsh not installed, cannot set as default shell"
+fi
+
 $dry_run && echo && echo "Dry run complete. No changes made."

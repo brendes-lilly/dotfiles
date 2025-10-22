@@ -184,7 +184,7 @@ key='url.git@github.com:.insteadOf'
 if $dry_run; then
   echo "Would run: git config --global --unset-all $key"
 else
-  git config --global --unset-all "$key" 2>/dev/null || true
+  git config --file $HOME/usr/etc/config/git/config --unset-all 'url.git@github.com:.insteadOf'
 fi
 
 $dry_run && echo && echo "Dry run complete. No changes made."

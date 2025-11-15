@@ -3,7 +3,7 @@
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 dotfiles_home="$HOME/usr"
 manifest_file="manifest"
-pkg="zsh tmux tree rsync neovim jq"
+pkg="zsh tmux tree ripgrep rsync neovim jq"
 
 link_into() {
   src=$1 dest=$2

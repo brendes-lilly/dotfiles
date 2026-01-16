@@ -1,0 +1,4 @@
+#!/bin/sh
+# get read length information for fastq files
+
+awk '{if(NR%4==2) print length($1)}' "$@" | uniq -c

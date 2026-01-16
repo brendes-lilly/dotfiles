@@ -1,0 +1,22 @@
+#!/bin/sh
+
+info=$(git rev-parse --abbrev-ref HEAD --git-dir 2>/dev/null) || exit 0
+
+git_dir=${info##*
+}
+branch=${info%%
+*}
+
+[ "$branch" = "HEAD" ] && branch=$(git rev-parse --short HEAD 2>/dev/null)
+
+if [ -d "$git_dir/rebase-merge" ] || [ -d "$git_dir/rebase-apply" ]; then
+	state="|REBASE"
+elif [ -f "$git_dir/MERGE_HEAD" ]; then
+	state="|MERGE"
+elif [ -f "$git_dir/CHERRY_PICK_HEAD" ]; then
+	state="|PICK"
+fi
+
+git diff-index --quiet HEAD -- 2>/dev/null || modified="*"
+
+printf '%s%s%s' "$branch" "$modified" "$state"

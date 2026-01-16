@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Print an entry heading for a log/notes file.
+# Output contains a long date for human processing, and a short date for
+# machine processing.
+
+# TODO fix `today` program so this no longer requires Unix-like `date`
+# program. Currently does not work with plan9port `date`.
+
+datehead=$(date +"%a %b %d    %Y-%m-%d")
+awk -v d="$datehead" 'BEGIN{ s="#"; print d }'

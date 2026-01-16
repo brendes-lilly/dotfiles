@@ -1,0 +1,10 @@
+#!/bin/sh
+if [ -z "$1" ]; then
+	printf '%s\n' "$0: path argument required" >&2
+	exit 1
+fi
+
+for f in "$1"/*; do
+	[ -e "$f" ] || [ -L "$f" ] || continue
+	[ -L "$f" ] && [ ! -e "$f" ] && printf '%s\n' "$f"
+done

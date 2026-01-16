@@ -1,0 +1,4 @@
+#!/bin/sh
+# Remove duplicate lines in a file
+
+awk '!visited[$0]++' "$@"

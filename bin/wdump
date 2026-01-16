@@ -1,0 +1,2 @@
+#!/bin/sh
+lynx -dump -width=72 -number_links "$@" | sed 's/^ *//g'

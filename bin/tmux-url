@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# launch url in text browser in a new tmux window, unless tmux isn't attached,
+# then just open it in the browser.
+
+set -e
+browser=lynx
+
+if [ "$(tmux display -p '#{session_attached}')" = "1" ]; then
+  tmux new-window $browser "$1"
+else
+  $browser "$1"
+fi

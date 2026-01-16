@@ -1,0 +1,80 @@
+[alias]
+	cm = commit -m
+	amend = commit --amend
+	ff = merge --ff-only
+	l = log --oneline --graph
+	s = status -sb
+	si = status -sb --ignored
+	su = status -sb --untracked
+	force = push origin HEAD --force-with-lease
+	ignored = ls-files --others --exclude-standard
+	main = "!git remote show origin | sed -n '/HEAD branch/s/.*: //p'"
+	nuke = update-index --force-remove
+	squash = "!git rebase -v -i $(git main)"
+	sync = "!git pull origin $(git main) --rebase"
+	unstage = restore --staged
+	untrack = rm --cached
+	update = "!git pull origin $(git rev-parse --abbrev-ref HEAD) --rebase"
+
+[branch]
+	sort = -committerdate
+
+[column]
+	ui = auto
+
+[core]
+	# keep an eye on these
+	fsmonitor = true
+	untrackedCache = true
+
+[tag]
+	sort = taggerdate
+
+[commit]
+	verbose = true
+
+[diff]
+	algorithm = histogram
+	colorMoved = plain
+	mnemonicPrefix = true
+	renames = true
+
+[fetch]
+	prune = true
+	pruneTags = true
+	all = true
+
+[help]
+	autocorrect = prompt
+
+[merge]
+	autoStash = true
+	conflictStyle = zdiff3
+	rebase = true
+
+[pull]
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+	followTags = true
+
+[rebase]
+	autoStash = true
+	autoSquash = true
+	updateRefs = true
+
+[status]
+	showUntrackedFiles = all
+
+[tag]
+	sort = version:refname
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[color]
+	ui = never

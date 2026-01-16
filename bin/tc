@@ -1,0 +1,24 @@
+#!/bin/sh
+
+comchar='#'
+[ -n "$1" ] && comchar=$1
+
+awk -v comment="$comchar" '
+function starts_with(s, p) { return substr(s,1,length(p)) == p }
+
+{
+  # preserve blank lines (only whitespace)
+  if ($0 ~ /^[[:space:]]*$/) { print; next }
+
+  if (comment == "") { print; next }
+
+  if (starts_with($0, comment)) {
+    # remove marker and a single following space if present
+    line = substr($0, length(comment)+1)
+    if (substr(line,1,1) == " ") line = substr(line,2)
+    print line
+  } else {
+    print comment " " $0
+  }
+}
+'

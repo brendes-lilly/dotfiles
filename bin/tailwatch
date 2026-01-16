@@ -1,0 +1,18 @@
+#!/bin/sh
+
+case "$1" in
+-n)
+  nlines="$2"
+  file="$3"
+  ;;
+*)
+  nlines=10
+  file="$1"
+  ;;
+esac
+
+while true; do
+  clear
+  tail -n "$nlines" "$file"
+  sleep 10
+done

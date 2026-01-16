@@ -1,0 +1,5 @@
+#!/bin/sh
+# Remove entries in a list based on duplicate values in specified column.
+# Change the number specified based on what column you want to base it on.
+
+awk '!a[$1]++' "$@"

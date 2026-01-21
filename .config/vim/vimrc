@@ -33,7 +33,7 @@ set statusline+=%=
 set statusline+=%l/%L
 set statusline+=\ %y
 
-inoremap <buffer> () ()<esc>i
+inoremap () ()<esc>i
 inoremap <C-a> <esc>0i
 inoremap <C-e> <esc>$i<right>
 nnoremap <Backspace> <C-b>

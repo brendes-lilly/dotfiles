@@ -3,6 +3,10 @@
 export H="$(uname -n)"
 export OS=$(uname | tr '[:upper:]' '[:lower:]')
 export ARCH=$(uname -m)
+export XDG_CONFIG_HOME=$HOME/.config
+export XDG_CACHE_HOME=$HOME/.cache
+export XDG_STATE_HOME=$HOME/.local/state
+export XDG_DATA_HOME=$HOME/.local/share
 
 export PLAN9=$HOME/opt/plan9
 export GOPATH=$HOME/opt/go
@@ -28,14 +32,18 @@ done
 [ -d "$PLAN9/bin" ] && PATH="$PATH:$PLAN9/bin"
 export PATH
 
+HISTSIZE=100000
+HISTCONTROL=ignoredups
+[ "$KSH_VERSION" ] && HISTFILE=$XDG_STATE_HOME/ksh_history
+
 if command -v vim >/dev/null 2>&1; then
-    export EDITOR=vim
+	export EDITOR=vim
 else
-    export EDITOR=vi
+	export EDITOR=vi
 fi
 export VISUAL=$EDITOR
 export FCEDIT=$EDITOR
-export ENV="$HOME/.kshrc"
+set -o vi
 
 export NO_COLOR=1
 export AV_LOG_FORCE_NOCOLOR=1
@@ -51,10 +59,9 @@ export FZF_DEFAULT_OPTS="--gutter=' ' --style=minimal --info=inline-right \
 		Onyx) export EINK=1 ;;
 	esac
 
-case $TERM in
-dumb|eterm-color|linux) _notitle=1 ;;
-*) [ -z "$TMUX" ] && [ "$TERMUX_VERSION" ] && _notitle=1 ;;
-esac
+_title=1
+case $TERM in dumb|eterm-color|linux) _title= ;; esac
+[ -z "$TMUX" ] && [ "$TERMUX_VERSION" ] && _title=
 
 _gitp() {
 	b=$(gitstat 2>/dev/null)
@@ -67,40 +74,40 @@ else
 	P='~${PWD#$HOME}$(_gitp)'
 fi
 
-if [ "$_notitle" ]; then
-	PS1="$P \$ "
-	PROMPT="$P %# "
-else
+if [ "$_title" ]; then
 	PS1='\[\e]0;'"$P"'\a\]\$ '
 	PROMPT=$'%{\e]0;'"$P"$'\a%}%# '
+else
+	PS1="$P \$ "
+	PROMPT="$P %# "
 fi
-unset _notitle
+unset _title
 
 if command ls --color=never /dev/null >/dev/null 2>&1; then
-    _ls() { LC_COLLATE=C command ls --color=never "$@"; }
+	_ls="LC_COLLATE=C \ls --color=never"
 else
-    _ls() { LC_COLLATE=C command ls "$@"; }
+	_ls="LC_COLLATE=C \ls"
 fi
 alias cd='cd -P'
 alias ..='cd ..'
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
-alias ls='_ls -1AF'
-alias lc='_ls -AF'
-alias ll='_ls -AFl'
-alias lt='_ls -AFltr'
+alias ls="$_ls -1AF"
+alias lc="$_ls -AF"
+alias ll="$_ls -AFl"
+alias lt="$_ls -AFltr"
 alias l=lc
 alias v=$EDITOR
 alias view="$EDITOR -R"
 
 case $TERM in
 dumb|eterm-color)
-    [ -n "$INSIDE_EMACS" ] && stty -echo
-    unset FCEDIT VISUAL
-    export GIT_PAGER=cat
-    set +o emacs +o vi
-    alias git='git -c color.ui=never'
+	[ -n "$INSIDE_EMACS" ] && stty -echo
+	unset FCEDIT VISUAL
+	export GIT_PAGER=cat
+	set +o emacs +o vi
+	alias git='git -c color.ui=never'
 	if [ "$termprog" ] || [ "$winid" ]; then
 		export EDITOR=E
 		export PAGER=p
@@ -109,9 +116,8 @@ dumb|eterm-color)
 		alias cd=cdawd
 		alias lc='lc -F'
 	fi
-    ;;
+	;;
 esac
 
-HISTSIZE=100000
 [ -r $HOME/.profile.local ] && . $HOME/.profile.local
 

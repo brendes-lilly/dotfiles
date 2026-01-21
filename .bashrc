@@ -1,16 +1,13 @@
 # -*- mode: shell-script; -*-
 # vim: ft=bash
 
-[[ -r ~/.profile ]] && . ~/.profile
+[ -r ~/.profile ] && . ~/.profile
 
-HISTFILE=$HOME/.local/state/bash_history
-HISTCONTROL=ignoreboth:erasedups
-HISTIGNORE='ls:lc:cd:pwd:bg:fg:history'
+HISTFILE=$XDG_STATE_HOME/bash_history
+HISTIGNORE='ls:lc:pwd:bg:fg:history'
 HISTFILESIZE=$HISTSIZE
 HISTTIMEFORMAT="%F %T "
 shopt -s histappend
-shopt -s checkwinsize
-shopt -s cdspell
 
 case $INSIDE_EMACS in
 vterm)
@@ -20,13 +17,7 @@ vterm)
     ;;
 esac
 
-if ! shopt -oq posix; then
-    for f in \
-        /usr/share/bash-completion/bash_completion \
-        /etc/bash_completion \
-        /etc/profile.d/bash_completion.sh \
-        /usr/local/etc/profile.d/bash_completion.sh \
-        /opt/homebrew/etc/profile.d/bash_completion.sh; do
-        [ -r $f ] && . "$f" && break
-    done
+if [ "$HOMEBREW_PREFIX" ] && ! shopt -oq posix; then
+	f=$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh
+	[ -r $f ] && . $f
 fi

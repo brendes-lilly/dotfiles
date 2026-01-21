@@ -1,2 +1,2 @@
 #!/bin/sh
-lynx -dump -width=72 -number_links "$@" | sed 's/^ *//g'
+lynx -dump -width=72 -number_links "$@" | awk 'NF {b=0} !NF {if(b++)next} 1'

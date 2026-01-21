@@ -1,0 +1,2 @@
+#!/bin/sh
+awk 'NR==1 {header=$0; print; next} $0!=header' "$@"

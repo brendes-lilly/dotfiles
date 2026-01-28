@@ -50,7 +50,7 @@ fi
 
 if [ -d "bin" ]; then
 	find bin -type f | while read -r f; do
-		dest="${HOME}/usr/bin/${f#bin/}"
+		dest="${HOME}/bin/${f#bin/}"
 		mkdir -p "$(dirname "$dest")"
 		cp "$f" "$dest"
 		chmod 755 "$dest"
@@ -93,3 +93,10 @@ fi
 gitconfig="${HOME}/.config/git/config"
 [ -f "$gitconfig" ] && git config --file "$gitconfig" \
 	--unset-all 'url.git@github.com:.insteadOf' 2>/dev/null || true
+
+# vim < 9.1.0327 doesn't look in ~/.config/vim
+if command -v vim >/dev/null 2>&1; then
+	if ! vim --version 2>/dev/null | grep -q '\$XDG_CONFIG_HOME/vim/vimrc'; then
+		ln -sf "${HOME}/.config/vim" "${HOME}/.vim"
+	fi
+fi

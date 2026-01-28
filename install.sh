@@ -61,7 +61,7 @@ for f in ./.*; do
 	[ -e "$f" ] || continue
 	name=$(basename "$f")
 	case "$name" in
-		.|..|.config) continue ;;
+		.|..|.config|.git) continue ;;
 	esac
 	dest="${HOME}/${name}"
 	if [ -d "$f" ]; then

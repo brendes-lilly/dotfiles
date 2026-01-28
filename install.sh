@@ -97,6 +97,6 @@ gitconfig="${HOME}/.config/git/config"
 # vim < 9.1.0327 doesn't look in ~/.config/vim
 if command -v vim >/dev/null 2>&1; then
 	if ! vim --version 2>/dev/null | grep -q '\$XDG_CONFIG_HOME/vim/vimrc'; then
-		ln -sf "${HOME}/.config/vim" "${HOME}/.vim"
+		ln -sfn "${HOME}/.config/vim" "${HOME}/.vim"
 	fi
 fi

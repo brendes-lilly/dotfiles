@@ -13,9 +13,20 @@ setopt interactive_comments
 autoload -z edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd v edit-command-line
+bindkey -M vicmd '_' insert-last-word
+bindkey -M viins '^?' backward-delete-char
+bindkey -M viins '^H' backward-delete-char
+bindkey -M viins '^W' backward-kill-word
+bindkey -M viins '^U' backward-kill-line
 
 autoload -Uz compinit
 compinit
+
+case $TERM in
+dumb|eterm-color)
+	unsetopt PROMPT_CR PROMPT_SP
+	unset zle_bracketed_paste
+esac
 
 case $INSIDE_EMACS in
 vterm)

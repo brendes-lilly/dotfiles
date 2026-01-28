@@ -10,8 +10,13 @@ if !has('nvim')
   let &viminfofile = s:statedir . '/viminfo'
   let &backupdir = s:statedir . '/backup//,' . &backupdir
   let &directory = s:statedir . '/swap//,' . &directory
+  let &packpath = s:datadir . ',' . &packpath
   let g:netrw_home = s:datadir
 endif
+
+let &t_ZH="\e[3m"
+let &t_ZR="\e[23m"
+let g:netrw_banner = 0
 
 filetype plugin indent on
 set autoindent copyindent smartindent
@@ -20,14 +25,14 @@ set hidden
 set hlsearch incsearch
 set laststatus=2
 set mouse=a
-set showbreak=>\
+set showbreak=\ ↪\ 
 set splitbelow splitright
 set tabstop=4 shiftwidth=0
 set textwidth=80
 
 set statusline=
-set statusline+=%{GitPath()}
-set statusline+=\ %{get(b:,'git_branch','')}
+set statusline+=%{GitStatusPath()}
+set statusline+=\ %{GitStatusBranch()}
 set statusline+=%(\ %r%m%q%)
 set statusline+=%=
 set statusline+=%l/%L
@@ -40,9 +45,10 @@ nnoremap <Backspace> <C-b>
 nnoremap <Space> <C-f>
 nnoremap <C-n> :bnext<cr>
 nnoremap <C-p> :bprevious<cr>
-nnoremap <cr> :nohlsearch<cr>
+nnoremap <Enter> :nohlsearch<cr>
+nnoremap <leader>b :ls<cr>:b<space>
 nnoremap <leader>d :read !datehead<cr>
-nnoremap <leader>l :lcd %:p:h<cr>
+nnoremap <leader>p :lcd %:p:h<cr>
 nnoremap <leader>r :read !<C-r><C-l><cr>
 nnoremap <leader>t :belowright terminal<cr>i
 nnoremap <leader>u yypVr-
@@ -57,29 +63,9 @@ augroup whitespace
   autocmd ColorScheme * hi link TrailingWhitespace SpellBad
 augroup END
 
-augroup colorOverrides
-  autocmd ColorScheme * hi! link hoonArm Identifier
-  autocmd ColorScheme * hi! link hoonAtomType Type
-  autocmd ColorScheme * hi! link hoonCubeType Type
-  autocmd ColorScheme * hi! link hoonNumber Number
-  autocmd ColorScheme * hi! link scalaCapitalWord Type
-  autocmd ColorScheme * hi! link scalaInstanceDeclaration Identifier
-  autocmd ColorScheme * hi! link scalaSpecial Normal
-augroup END
-
-let &t_ZH="\e[3m"
-let &t_ZR="\e[23m"
-let g:netrw_banner = 0
-
+syntax on
 colorscheme calm
 
-if !has('nvim')
-  if empty(glob('~/.config/vim/autoload/plug.vim'))
-    silent !curl -fLo ~/.config/vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd VimEnter * PlugInstall --sync | runtime $MYVIMRC
-  endif
-  call plug#begin('~/.config/vim/plug')
-  Plug 'mhinz/vim-signify'
-  Plug 'chrisbra/Colorizer'
-  call plug#end()
-endif
+packadd comment
+packadd helptoc
+packadd osc52

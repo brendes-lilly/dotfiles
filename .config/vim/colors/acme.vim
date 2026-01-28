@@ -45,17 +45,17 @@ let s:bg3 = "#f2f2dd"
 let s:fg1 = s:black1
 let s:fg2 = s:black2
 
-exe 'hi Cleared ctermfg=none ctermbg=none ctermfg=none guifg=none guibg=none gui=none '
+exe 'hi Cleared ctermfg=none ctermbg=none ctermfg=none guifg=fg guibg=bg gui=none '
 exe 'hi Normal ctermfg=none ctermbg=none cterm=none guifg='.s:fg1.' guibg='.s:bg1.' gui=none '
 exe 'hi Error cterm=bold ctermfg=1 ctermbg=none '
-exe 'hi CursorLine ctermfg=none ctermbg=none cterm=none guifg=none guibg='.s:bg3.' gui=none '
+exe 'hi CursorLine ctermfg=none ctermbg=none cterm=none guifg=fg guibg='.s:bg3.' gui=none '
 exe 'hi Constant cterm=none ctermfg=none gui=none guifg='.s:fg1.' '
 exe 'hi Comment cterm=none ctermfg=8 guifg='.s:fg2.' '
-exe 'hi EndOfBuffer ctermfg=7 ctermbg=none cterm=none guifg='.s:bg3.' guibg=none gui=none '
-exe 'hi DiffAdd ctermfg=2 ctermbg=none guifg='.s:green1.' guibg=none '
-exe 'hi DiffChange ctermfg=5 ctermbg=none guifg='.s:blue1.' guibg=none '
-exe 'hi DiffDelete ctermfg=1 ctermbg=none guifg='.s:red1.' guibg=none '
-exe 'hi Folded term=standout cterm=bold ctermfg=none ctermbg=none gui=bold guifg=none guibg=none'
+exe 'hi EndOfBuffer ctermfg=7 ctermbg=none cterm=none guifg='.s:bg3.' guibg=bg gui=none '
+exe 'hi DiffAdd ctermfg=2 ctermbg=none guifg='.s:green1.' guibg=bg '
+exe 'hi DiffChange ctermfg=5 ctermbg=none guifg='.s:blue1.' guibg=bg '
+exe 'hi DiffDelete ctermfg=1 ctermbg=none guifg='.s:red1.' guibg=bg '
+exe 'hi Folded term=standout cterm=bold ctermfg=none ctermbg=none gui=bold guifg=fg guibg=bg'
 exe 'hi Link cterm=underline ctermfg=4 gui=underline guifg='.s:blue1.' '
 exe 'hi LineNr cterm=none ctermfg=7 gui=none guifg='.s:bg2.' '
 exe 'hi MatchParen ctermbg=7 guibg='.s:bg2.' '
@@ -67,18 +67,18 @@ exe 'hi CurSearch ctermfg=0 ctermbg=yellow cterm=underline guifg=fg guibg='.s:ye
 exe 'hi IncSearch ctermfg=0 ctermbg=magenta guifg='.s:white3.' guibg='.s:purple2.' gui=none '
 exe 'hi Search ctermfg=0 ctermbg=yellow guifg=fg guibg='.s:yellow2.' '
 exe 'hi Special cterm=none ctermfg=none gui=none guifg='.s:fg1.' '
-exe 'hi StatusLine cterm=bold,underline ctermbg=195 gui=bold,underline guifg=none guibg='.s:cyan3.' '
-exe 'hi StatusLineNC cterm=underline ctermbg=195 gui=underline guifg=none guibg='.s:cyan3.' '
+exe 'hi StatusLine cterm=underline ctermbg=195 gui=bold,underline guifg=fg guibg='.s:cyan3.' '
+exe 'hi StatusLineNC cterm=underline ctermbg=195 gui=underline guifg=fg guibg='.s:cyan3.' '
 exe 'hi String cterm=none ctermfg=none guifg='.s:fg1.' '
 exe 'hi TabLineSel cterm=bold,underline ctermbg=116 gui=bold,underline guibg='.s:cyan2.' '
 exe 'hi Todo ctermfg=0 ctermbg=yellow cterm=bold,underline guifg=black guibg='.s:yellow2.' gui=bold,underline '
-exe 'hi VertSplit cterm=none ctermfg=195 ctermbg=195 gui=none guifg='.s:fg1.' guibg=none '
+exe 'hi VertSplit cterm=none ctermfg=195 ctermbg=195 gui=none guifg='.s:fg1.' guibg=bg '
 exe 'hi Visual ctermfg=0 ctermbg=11 guifg='.s:fg1.' guibg='.s:yellow2.' '
 
-hi Underlined cterm=underline ctermfg=none gui=underline guifg=none
-hi Title cterm=bold ctermfg=none ctermbg=none gui=bold guifg=none
+hi Underlined cterm=underline ctermfg=none gui=underline guifg=fg
+hi Title cterm=bold ctermfg=none ctermbg=none gui=bold guifg=fg
 hi link markdownCodeDelimiter markdownCode
-hi markdownLinkText cterm=bold ctermfg=none gui=bold guifg=none
+hi markdownLinkText cterm=bold ctermfg=none gui=bold guifg=fg
 
 hi! link Delimiter Constant
 hi! link Directory Normal

@@ -16,6 +16,7 @@ hi Italic ctermfg=none ctermbg=none cterm=italic
 hi Standout ctermfg=8 ctermbg=none cterm=bold,reverse
 hi Underlined ctermfg=8 ctermbg=none cterm=underline
 hi VertSplit ctermfg=7 ctermbg=none cterm=none
+hi ErrorMsg cterm=reverse ctermfg=1 ctermbg=none
 
 " syntax
 hi! link Comment Dim
@@ -46,7 +47,7 @@ syn region shCommandSub matchgroup=String start="\$(" end=")" contains=NONE
 
 " ui
 hi Error ctermfg=1 ctermbg=none cterm=underline
-hi NonText ctermfg=210 ctermbg=none cterm=bold
+hi NonText ctermfg=1 ctermbg=none cterm=none
 hi SpellCap ctermfg=4 ctermbg=none cterm=underline
 hi SpellLocal ctermfg=6 ctermbg=none cterm=underline
 hi SpellRare ctermfg=5 ctermbg=none cterm=underline
@@ -54,8 +55,8 @@ hi DiffAdd ctermfg=6 ctermbg=none cterm=bold
 hi DiffChange ctermfg=3 ctermbg=none cterm=bold
 hi DiffDelete ctermfg=1 ctermbg=none cterm=bold
 hi Question ctermfg=2 ctermbg=none cterm=none
-hi CurSearch ctermfg=none ctermbg=7 cterm=underline
-hi Search ctermfg=0 ctermbg=11 cterm=none
+hi! link CurSearch Standout
+hi Search ctermfg=none ctermbg=7 cterm=underline
 hi StatusLine ctermfg=none ctermbg=7 cterm=none
 hi StatusLineNC ctermfg=8 ctermbg=7 cterm=none
 hi TabLineSel ctermfg=none ctermbg=7 cterm=underline

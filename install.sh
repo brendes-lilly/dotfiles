@@ -60,7 +60,9 @@ fi
 for f in ./.*; do
 	[ -e "$f" ] || continue
 	name=$(basename "$f")
-	[ "$name" = ".config" ] && continue
+	case "$name" in
+		.|..|.config) continue ;;
+	esac
 	dest="${HOME}/${name}"
 	if [ -d "$f" ]; then
 		copy_tree "$f" "$dest"

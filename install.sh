@@ -32,13 +32,13 @@ copy_tree() {
 
 cd "$dotfiles" || exit 1
 
-if command -v apt >/dev/null 2>&1; then
+if command -v apt-get >/dev/null 2>&1; then
 	if [ "$(id -u)" = "0" ]; then
-		DEBIAN_FRONTEND=noninteractive apt update
-		DEBIAN_FRONTEND=noninteractive apt install -y $pkg
+		DEBIAN_FRONTEND=noninteractive apt-get update
+		DEBIAN_FRONTEND=noninteractive apt-get install -y $pkg
 	elif command -v sudo >/dev/null 2>&1; then
-		sudo DEBIAN_FRONTEND=noninteractive apt update
-		sudo DEBIAN_FRONTEND=noninteractive apt install -y $pkg
+		sudo DEBIAN_FRONTEND=noninteractive apt-get update
+		sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $pkg
 	fi
 fi
 

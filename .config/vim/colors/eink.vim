@@ -1,19 +1,52 @@
+set background=light
+set notermguicolors
 highlight clear
 syntax reset
-set notermguicolors
-set t_Co=8
 let g:colors_name = "eink"
 
 " base
 hi Normal ctermfg=none ctermbg=none cterm=none
-hi Subtle ctermfg=none ctermbg=7 cterm=none
-hi Bold ctermfg=none ctermbg=none cterm=bold
-hi Dim ctermfg=8 ctermbg=none cterm=none
-hi Italic ctermfg=none ctermbg=none cterm=italic
-hi Standout ctermfg=8 ctermbg=none cterm=bold,reverse
-hi Underline ctermfg=none ctermbg=none cterm=underline
-hi UnderlineDim ctermfg=8 ctermbg=none cterm=underline
-hi UnderlineBold ctermfg=none ctermbg=none cterm=underline,bold
+hi Underlined ctermfg=none ctermbg=none cterm=underline
+hi default Subtle ctermfg=none ctermbg=7 cterm=none
+hi default Bold ctermfg=none ctermbg=none cterm=bold
+hi default Dim ctermfg=8 ctermbg=none cterm=none
+hi default Faint ctermfg=7 ctermbg=none cterm=bold
+hi default Italic ctermfg=none ctermbg=none cterm=italic
+hi default Standout ctermfg=8 ctermbg=none cterm=bold,reverse
+hi default UnderlinedDim ctermfg=8 ctermbg=none cterm=underline
+hi default UnderlinedBold ctermfg=none ctermbg=none cterm=underline,bold
+
+if !empty($EINK)
+  set t_Co=8
+  hi default Reverse term=reverse ctermfg=none ctermbg=none cterm=reverse
+  hi! link CurSearch Underlined
+  hi! link Search Underlined
+  hi! link Visual Underlined
+  hi! link StatusLine Underlined
+  hi! link StatusLineNC Underlined
+  hi! link TabLine UnderlinedDim
+  hi! link TabLineSel UnderlinedBold
+  hi! link Pmenu Subtle
+  hi! link PmenuSbar Subtle
+  hi! link PmenuSel Standout
+  hi! link PmenuThumb Standout
+  hi! link WildMenu Standout
+else
+  hi default Reverse term=reverse ctermfg=0 ctermbg=none cterm=reverse
+  hi! link CurSearch Reverse
+  hi! link IncSearch Standout
+  hi! link Search Subtle
+  hi! link Visual Reverse
+  hi! link StatusLine Reverse
+  hi! link StatusLineNC Reverse
+  hi! link TabLine Underlined
+  hi! link TabLineSel Reverse
+  hi! link Pmenu Normal
+  hi! link PmenuSbar Subtle
+  hi! link PmenuSel Reverse
+  hi! link PmenuThumb Standout
+  hi! link WildMenu Underlined
+endif
 
 " syntax
 hi! link Comment Normal
@@ -24,8 +57,8 @@ hi! link Number Normal
 hi! link PreProc Normal
 hi! link Special Normal
 hi! link SpecialChar Normal
-hi! link SpecialComment Dim
-hi! link SpecialKey Dim
+hi! link SpecialComment Normal
+hi! link SpecialKey Underlined
 hi! link Statement Normal
 hi! link String Normal
 hi! link Type Normal
@@ -44,8 +77,7 @@ syn region shCommandSub matchgroup=String start="\$(" end=")" contains=NONE
 hi Todo ctermfg=none ctermbg=none cterm=bold,underline
 hi VertSplit ctermfg=none ctermbg=none cterm=none
 hi! link ColorColumn Subtle
-hi! link CurSearch Underline
-hi! link CursorLine Underline
+hi! link CursorLine Underlined
 hi! link CursorLineFold Dim
 hi! link CursorLineNr Normal
 hi! link DiffAdd Normal
@@ -56,43 +88,33 @@ hi! link Directory Normal
 hi! link EndOfBuffer Dim
 hi! link Error Normal
 hi! link Folded Bold
-hi! link IncSearch Standout
 hi! link LineNr Dim
-hi! link MatchParen Underline
+hi! link MatchParen Underlined
 hi! link ModeMsg Normal
-hi! link MoreMsg Dim
-hi! link NonText Dim
-hi! link Pmenu Subtle
-hi! link PmenuSbar Subtle
-hi! link PmenuSel Standout
-hi! link PmenuThumb Standout
+hi! link MoreMsg Bold
+hi! link NonText Underlined
+hi! link PmenuBorder Normal
 hi! link Question Normal
 hi! link QuickFixLine Normal
-hi! link Search Underline
-hi! link SignColumn Dim
+hi! link SignColumn Normal
 hi! link SpellBad Error
-hi! link SpellCap Underline
-hi! link SpellLocal Underline
-hi! link SpellRare Underline
-hi! link StatusLine Underline
-hi! link StatusLineNC Underline
+hi! link SpellCap Underlined
+hi! link SpellLocal Underlined
+hi! link SpellRare Underlined
 hi! link StatusLineTerm StatusLine
 hi! link StatusLineTermNC StatusLineNC
-hi! link TabLine Underlined
-hi! link TabLineFill TabLine
-hi! link TabLineSel Underline
 hi! link Title Bold
-" hi! link Visual Subtle
-hi! link Visual Underlined
+hi! link TabLineFill TabLine
+hi! link TabPanel Normal
+hi! link TabPanelFill Normal
 hi! link WarningMsg Normal
-hi! link WildMenu Subtle
 hi! link helpHyperTextJump Underlined
-hi! link helpOption Dim
+hi! link helpOption Underlined
 hi! link htmlBold Bold
 hi! link netrwSymLink Normal
 hi! link qfFileName Normal
 
-" nvim only
+" nvim
 hi! link DiagnosticSignWarn WarningMsg
 hi! link DiagnosticWarn Normal
 hi! link DiagnosticHint Normal

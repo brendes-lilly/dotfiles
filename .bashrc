@@ -7,7 +7,7 @@ HISTTIMEFORMAT="%F %T "
 shopt -s histappend
 
 case $TERM in
-dumb|eterm-color) ;;
+dumb) ;;
 *)
 	bind -m emacs 'TAB:menu-complete'
 	bind -m emacs '"\e[Z":menu-complete-backward'

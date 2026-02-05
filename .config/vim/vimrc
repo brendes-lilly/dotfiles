@@ -1,6 +1,7 @@
 if !has('nvim')
-  set fillchars=vert:\│
+  set fillchars=vert:\│,tpl_vert:\│
   set pastetoggle=<C-s>
+  set pumborder=single
   set ttymouse=sgr
   let s:datadir = !empty($XDG_DATA_HOME) ? $XDG_DATA_HOME : $HOME.'/.local/share/vim'
   let s:statedir = !empty($XDG_STATE_HOME) ? $XDG_STATE_HOME : $HOME.'/.local/state/vim'
@@ -38,6 +39,8 @@ set statusline+=%=
 set statusline+=%l/%L
 set statusline+=\ %y
 
+nnoremap > gt
+nnoremap < gT
 inoremap () ()<esc>i
 inoremap <C-a> <esc>0i
 inoremap <C-e> <esc>$i<right>

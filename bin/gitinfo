@@ -17,6 +17,6 @@ elif [ -f "$git_dir/CHERRY_PICK_HEAD" ]; then
 	state="|PICK"
 fi
 
-git diff-index --quiet HEAD -- 2>/dev/null || modified="+"
+git diff-index --quiet HEAD -- 2>/dev/null || modified="*"
 
-printf '%s%s%s' "$branch" "$modified" "$state"
+printf '%s%s%s%s' "$branch" "$modified" "$state"

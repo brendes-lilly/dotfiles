@@ -1,110 +1,130 @@
-" acme.vim -- A minimal colorscheme inspired by the Acme editor
-" If in terminal, assumes true color capabilities and a light background
+" acmevim -- A minimal colorscheme inspired by the Acme editor
+" 'termguicolors' required
 
-set guioptions-=elL
+if !exists('v:colornames')
+	finish
+endif
+
 set background=light
-
-if has("termguicolors")
-	set termguicolors
-	let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-	let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-endif
-
-if exists("syntax on")
-	highlight clear
-	syntax reset
-endif
-
+set guioptions-=elL
+set termguicolors
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+highlight clear
+syntax reset
 let g:colors_name = "acme"
 
-let  s:black1   =  "#000000"
-let  s:black2   =  "#999990"
-let  s:white1   =  "#e1e1ce"
-let  s:white2   =  "#ebebd7"
-let  s:white3   =  "#ffffff"
-let  s:red1     =  "#bb5d5d"
-let  s:red2     =  "#ff8888"
-let  s:green1   =  "#448844"
-let  s:green2   =  "#88cc88"
-let  s:green3   =  "#e4f8e4"
-let  s:green4   =  "#eaffea"
-let  s:blue1    =  "#4466bb"
-let  s:blue2    =  "#bbddee"
-let  s:yellow1  =  "#99884c"
-let  s:yellow2  =  "#eeee9e"
-let  s:yellow3  =  "#ffffea"
-let  s:purple1  =  "#aa77aa"
-let  s:purple2  =  "#8888cc"
-let  s:cyan1    =  "#55aaaa"
-let  s:cyan2    =  "#aeeeee"
-let  s:cyan3    =  "#eaffff"
+call extend(v:colornames, {
+            \ 'acme_black1': '#000000',
+            \ 'acme_black2': '#888880',
+            \ 'acme_white1': '#e1e1ce',
+            \ 'acme_white2': '#ebebd7',
+            \ 'acme_white3': '#ffffff',
+            \ 'acme_red1': '#bb5d5d',
+            \ 'acme_red2': '#ff8888',
+            \ 'acme_green1': '#448844',
+            \ 'acme_green2': '#88cc88',
+            \ 'acme_green3': '#e4f8e4',
+            \ 'acme_green4': '#eaffea',
+            \ 'acme_blue1': '#4466bb',
+            \ 'acme_blue2': '#bbddee',
+            \ 'acme_yellow1': '#99884c',
+            \ 'acme_yellow2': '#eeee9e',
+            \ 'acme_yellow3': '#ffffea',
+            \ 'acme_purple1': '#aa77aa',
+            \ 'acme_purple2': '#8888cc',
+            \ 'acme_cyan1': '#55aaaa',
+            \ 'acme_cyan2': '#aeeeee',
+            \ 'acme_cyan3': '#eaffff',
+            \ 'acme_shadow_ui': '#808888',
+            \ })
 
-let s:bg1 = s:yellow3
-let s:bg2 = s:white1
-let s:bg3 = "#f2f2dd"
-let s:fg1 = s:black1
-let s:fg2 = s:black2
+hi Normal cterm=none gui=none guifg=acme_black1 guibg=acme_yellow3
+hi Cleared cterm=none gui=none guifg=fg guibg=bg
 
-exe 'hi Cleared ctermfg=none ctermbg=none ctermfg=none guifg=fg guibg=bg gui=none '
-exe 'hi Normal ctermfg=none ctermbg=none cterm=none guifg='.s:fg1.' guibg='.s:bg1.' gui=none '
-exe 'hi Error cterm=bold ctermfg=1 ctermbg=none '
-exe 'hi CursorLine ctermfg=none ctermbg=none cterm=none guifg=fg guibg='.s:bg3.' gui=none '
-exe 'hi Constant cterm=none ctermfg=none gui=none guifg='.s:fg1.' '
-exe 'hi Comment cterm=none ctermfg=8 guifg='.s:fg2.' '
-exe 'hi EndOfBuffer ctermfg=7 ctermbg=none cterm=none guifg='.s:bg3.' guibg=bg gui=none '
-exe 'hi DiffAdd ctermfg=2 ctermbg=none guifg='.s:green1.' guibg=bg '
-exe 'hi DiffChange ctermfg=5 ctermbg=none guifg='.s:blue1.' guibg=bg '
-exe 'hi DiffDelete ctermfg=1 ctermbg=none guifg='.s:red1.' guibg=bg '
-exe 'hi Folded term=standout cterm=bold ctermfg=none ctermbg=none gui=bold guifg=fg guibg=bg'
-exe 'hi Link cterm=underline ctermfg=4 gui=underline guifg='.s:blue1.' '
-exe 'hi LineNr cterm=none ctermfg=7 gui=none guifg='.s:bg2.' '
-exe 'hi MatchParen ctermbg=7 guibg='.s:bg2.' '
-exe 'hi Pmenu ctermbg=194 guibg='.s:green3.' '
-exe 'hi PmenuSel ctermfg=194 ctermbg=71 guifg='.s:green3.' guibg='.s:green1.' gui=none '
-exe 'hi PmenuSbar ctermbg=114 guibg='.s:green2.' '
-exe 'hi PmenuThumb ctermbg=71 guibg='.s:green1.' '
-exe 'hi CurSearch ctermfg=0 ctermbg=yellow cterm=underline guifg=fg guibg='.s:yellow2.' gui=underline'
-exe 'hi IncSearch ctermfg=0 ctermbg=magenta guifg='.s:white3.' guibg='.s:purple2.' gui=none '
-exe 'hi Search ctermfg=0 ctermbg=yellow guifg=fg guibg='.s:yellow2.' '
-exe 'hi Special cterm=none ctermfg=none gui=none guifg='.s:fg1.' '
-exe 'hi StatusLine cterm=underline ctermbg=195 gui=bold,underline guifg=fg guibg='.s:cyan3.' '
-exe 'hi StatusLineNC cterm=underline ctermbg=195 gui=underline guifg=fg guibg='.s:cyan3.' '
-exe 'hi String cterm=none ctermfg=none guifg='.s:fg1.' '
-exe 'hi TabLineSel cterm=bold,underline ctermbg=116 gui=bold,underline guibg='.s:cyan2.' '
-exe 'hi Todo ctermfg=0 ctermbg=yellow cterm=bold,underline guifg=black guibg='.s:yellow2.' gui=bold,underline '
-exe 'hi VertSplit cterm=none ctermfg=195 ctermbg=195 gui=none guifg='.s:fg1.' guibg=bg '
-exe 'hi Visual ctermfg=0 ctermbg=11 guifg='.s:fg1.' guibg='.s:yellow2.' '
+hi Dim cterm=none gui=none guifg=acme_black2
+hi Fade cterm=none gui=none guifg=acme_white2
 
-hi Underlined cterm=underline ctermfg=none gui=underline guifg=fg
-hi Title cterm=bold ctermfg=none ctermbg=none gui=bold guifg=fg
-hi link markdownCodeDelimiter markdownCode
-hi markdownLinkText cterm=bold ctermfg=none gui=bold guifg=fg
+hi DiffAdd cterm=none gui=none guifg=acme_green1 guibg=bg
+hi DiffChange cterm=none gui=none guifg=acme_blue1 guibg=bg
+hi DiffDelete cterm=none gui=none guifg=acme_red1 guibg=bg
+hi Error cterm=none guifg=acme_red1 guibg=bg gui=none
+hi Link cterm=underline gui=underline guifg=acme_blue1
+hi MatchParen cterm=none gui=none guibg=acme_white2
+hi Pmenu cterm=none gui=none guibg=acme_green3
+hi PmenuBorder cterm=none gui=none guifg=acme_green1 guibg=acme_green3
+hi PmenuSbar cterm=none gui=none guibg=acme_green2
+hi PmenuSel cterm=none gui=none guifg=acme_green3 guibg=acme_green1
+hi PmenuThumb cterm=none gui=none guibg=acme_green1
+hi StatusLine cterm=underline gui=underline guifg=fg guibg=acme_cyan3
+hi StatusLineNC cterm=underline gui=underline guifg=acme_shadow_ui guibg=acme_cyan3
+hi Todo cterm=bold,underline gui=bold,underline guifg=fg guibg=bg
+hi Underlined cterm=underline gui=underline guifg=fg
+hi Visual cterm=none gui=none guifg=fg guibg=acme_yellow2
+hi WildMenu cterm=underline gui=underline guifg=fg guibg=acme_cyan2
 
-hi! link Delimiter Constant
+hi CurSearch cterm=underline gui=underline guifg=fg guibg=acme_yellow2
+hi IncSearch cterm=none gui=none guifg=acme_white3 guibg=acme_purple2
+hi Search cterm=none gui=none guifg=fg guibg=acme_yellow2
+
+hi! link EndOfBuffer Fade
+hi! link VertSplit Normal
+hi! link CursorLine Underlined
+hi! link DiffText Dim
+hi! link Title Bold
 hi! link Directory Normal
-hi! link DiffText Comment
-hi! link helpHyperTextJump Link
-hi! link Function Normal
-hi! link Identifier Normal
-hi! link NeoTreeCursorLine CursorLine
-hi! link NeoTreeFileIcon Cleared
-hi! link NeoTreeRootName Normal
-hi! link NonText Comment
-hi! link PreProc Normal
-hi! link SignColumn Comment
-hi! link SignifySignAdd Comment
-hi! link SignifySignChange Comment
-hi! link SignifySignDelete Comment
-hi! link Statement Normal
+hi! link LineNr Fade
+hi! link Folded Normal
+hi! link helpHyperTextJump Underlined
+hi! link NonText Dim
+hi! link SignColumn Dim
 hi! link StatusLineTerm StatusLine
 hi! link StatusLineTermNC StatusLineNC
 hi! link TabLine StatusLineNC
-hi! link TabLineFill StatusLineNC
-hi! link Type Normal
-hi! link vimMapModKey Constant
-hi! link vimNotation Constant
-hi! link markdownURL Link
+hi! link TabLineFill StatusLine
+hi! link TabLineSel StatusLine
+hi! link vimMapModKey Normal
+hi! link vimNotation Normal
 
-let g:terminal_ansi_colors = [s:black1, s:red1, s:green1, s:yellow1, s:blue1,
-			\ s:purple1, s:cyan1, s:white2, s:black2, s:red2, s:green2,
-			\ s:yellow2, s:blue2, s:purple2, s:cyan2, s:white3]
+hi! link Comment Dim
+hi! link Constant Normal
+hi! link Special Normal
+hi! link Statement Normal
+hi! link String Normal
+hi! link Identifier Normal
+hi! link PreProc Normal
+hi! link Delimiter Normal
+hi! link Type Normal
+hi! link Function Normal
+
+
+" nvim/third party
+hi! link markdownURL Link
+hi! link markdownCode Normal
+hi! link markdownCodeDelimiter markdownCode
+hi! link markdownLinkText Normal
+hi! link NeoTreeCursorLine CursorLine
+hi! link NeoTreeFileIcon Cleared
+hi! link NeoTreeRootName Normal
+hi! link SignifySignAdd Comment
+hi! link SignifySignChange Comment
+hi! link SignifySignDelete Comment
+
+let g:terminal_ansi_colors = [
+            \ v:colornames['acme_black1'],
+            \ v:colornames['acme_red1'],
+            \ v:colornames['acme_green1'],
+            \ v:colornames['acme_yellow1'],
+            \ v:colornames['acme_blue1'],
+            \ v:colornames['acme_purple1'],
+            \ v:colornames['acme_cyan1'],
+            \ v:colornames['acme_white2'],
+            \ v:colornames['acme_black2'],
+            \ v:colornames['acme_red2'],
+            \ v:colornames['acme_green2'],
+            \ v:colornames['acme_yellow2'],
+            \ v:colornames['acme_blue2'],
+            \ v:colornames['acme_purple2'],
+            \ v:colornames['acme_cyan2'],
+            \ v:colornames['acme_white3'],
+            \ ]

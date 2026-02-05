@@ -30,7 +30,7 @@ do
 	esac
 done
 
-if [ -n "$PLAN9" ]; then
+if [ -d "$PLAN9" ]; then
 	PATH=$PATH:$PLAN9/bin
 	NAMESPACE=/tmp/ns.$USER
 	mkdir -p "$NAMESPACE"
@@ -48,15 +48,10 @@ case $OS in
 darwin)
 	export BASH_SILENCE_DEPRECATION_WARNING=1
 	export HOMEBREW_NO_EMOJI=1
-	export HOMEBREW_NO_ENV_HINTS
+	export HOMEBREW_NO_ENV_HINTS=1
 	export HOMEBREW_NO_INSECURE_REDIRECT=1
 ;;
 esac
-
-[ "$TERMUX_VERSION" ] &&
-	case "$(getprop ro.product.brand 2>/dev/null)" in
-		Onyx) export EINK=1 ;;
-	esac
 
 if command -v vim >/dev/null 2>&1; then
 	export EDITOR=vim
@@ -81,11 +76,11 @@ alias ..='cd ..'
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
-alias ls="$_ls -1AF"
-alias lc="$_ls -AF"
+alias ls="$_ls -AF"
 alias ll="$_ls -AFl"
 alias lt="$_ls -AFltr"
-alias l=lc
+alias lc=ls
+alias l=ls
 alias v=$EDITOR
 alias view="$EDITOR -R"
 
@@ -99,33 +94,37 @@ h() {
 
 _gitp() { b=$(gitinfo 2>/dev/null) && printf ' [%s]' "$b"; }
 
-_title=1
-
-case $TERM in dumb|eterm-color|linux) _title= ;; esac
-[ -z "$TMUX" ] && [ "$TERMUX_VERSION" ] && _title=
-
-if [ "$SSH_CONNECTION" ] || [ "$CODESPACES" ]; then
-	P='${USER}@${H}:~${PWD#$HOME}$(_gitp)'
-else
-	P='~${PWD#$HOME}$(_gitp)'
+if [ "$SSH_CONNECTION" ]; then
+	if [ "$CODESPACES" ]; then
+		P="${GITHUB_USER}@${CODESPACE_NAME%-*}:"
+	else
+		P="${USER}@${H}:"
+	fi
 fi
 
-if [ "$_title" ]; then
-	PS1='\[\e]0;'"$P"'\a\]\$ '
-	PROMPT=$'%{\e]0;'"$P"$'\a%}%# '
-else
-	PS1="$P \$ "
-	PROMPT="$P %# "
+_term=$TERM
+if [ "$TERMUX_VERSION" ]; then
+	[ -z "$TMUX" ] && _term=termux
+	case "$(getprop ro.product.brand 2>/dev/null)" in
+		Onyx) export EINK=1 ;;
+	esac
 fi
 
-unset _title
-
-case $TERM in
-dumb|eterm-color)
-	[ -n "$INSIDE_EMACS" ] && stty -echo
+case $_term in
+xterm*|tmux*)
+	PS1='\[\e]0;'"$P"'\w$(_gitp)\a\]% '
+	PROMPT=$'%{\e]0;'"$P%~"'$(_gitp)'$'\a%}%# '
+	;;
+dumb)
 	unset FCEDIT VISUAL
 	export PAGER=cat
 	set +o emacs +o vi
+	case $INSIDE_EMACS in
+	*comint)
+		stty -echo
+		PS1=$(printf '\033]0;\\w$(_gitp)\007\033]7;file://\\H\\w\007%% ')
+		PROMPT=$(printf '\033]0;%%~$(_gitp)\007\033]7;file://%%m%%~\007%%# ')
+	esac
 	if [ "$termprog" ] || [ "$winid" ]; then
 		. 9
 		export EDITOR=E
@@ -140,7 +139,12 @@ dumb|eterm-color)
 		awd
 	fi
 	;;
+*)
+	PS1="$P"'\w$(_gitp) % '
+	PROMPT="$P"'%~$(_gitp) %# '
 esac
+unset _term
 
-[ -r $XDG_DATA_HOME/profile.local ] && . $XDG_DATA_HOME/profile.local
-
+if [ -r "$XDG_DATA_HOME/profile.local" ]; then
+	. "$XDG_DATA_HOME/profile.local"
+fi

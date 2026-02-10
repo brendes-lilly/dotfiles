@@ -43,14 +43,13 @@ export NODE_NO_READLINE=1
 export FZF_DEFAULT_OPTS="--gutter=' ' --style=minimal --info=inline-right \
 	--layout=reverse --no-bold --no-unicode --no-color --color=fg+:-1,hl+:-1 \
 	--prompt=': '"
+export LESS="--mouse"
 
-case $OS in
-darwin)
+case $OS in darwin)
 	export BASH_SILENCE_DEPRECATION_WARNING=1
 	export HOMEBREW_NO_EMOJI=1
 	export HOMEBREW_NO_ENV_HINTS=1
 	export HOMEBREW_NO_INSECURE_REDIRECT=1
-;;
 esac
 
 if command -v vim >/dev/null 2>&1; then
@@ -92,15 +91,7 @@ h() {
 	fi
 }
 
-_gitp() { b=$(gitinfo 2>/dev/null) && printf ' [%s]' "$b"; }
-
-if [ "$SSH_CONNECTION" ]; then
-	if [ "$CODESPACES" ]; then
-		P="${GITHUB_USER}@${CODESPACE_NAME%-*}:"
-	else
-		P="${USER}@${H}:"
-	fi
-fi
+_gitinfo() { b=$(gitinfo 2>/dev/null) && printf ' [%s]' "$b"; }
 
 _term=$TERM
 if [ "$TERMUX_VERSION" ]; then
@@ -110,10 +101,18 @@ if [ "$TERMUX_VERSION" ]; then
 	esac
 fi
 
+if [ "$SSH_CONNECTION" ]; then
+	if [ "$CODESPACES" ]; then
+		P="${CODESPACE_NAME%-*}:"
+	else
+		P="${USER}@${H}:"
+	fi
+fi
+
 case $_term in
 xterm*|tmux*)
-	PS1='\[\e]0;'"$P"'\w$(_gitp)\a\]% '
-	PROMPT=$'%{\e]0;'"$P%~"'$(_gitp)'$'\a%}%# '
+	PS1='\[\e]0;'"$P"'\w$(_gitinfo)\a\]% '
+	PROMPT=$'%{\e]0;'"$P%~"'$(_gitinfo)'$'\a%}%# '
 	;;
 dumb)
 	unset FCEDIT VISUAL
@@ -122,8 +121,8 @@ dumb)
 	case $INSIDE_EMACS in
 	*comint)
 		stty -echo
-		PS1=$(printf '\033]0;\\w$(_gitp)\007\033]7;file://\\H\\w\007%% ')
-		PROMPT=$(printf '\033]0;%%~$(_gitp)\007\033]7;file://%%m%%~\007%%# ')
+		PS1=$(printf '\033]0;\\w$(_gitinfo)\007\033]7;file://\\H\\w\007%% ')
+		PROMPT=$(printf '\033]0;%%~$(_gitinfo)\007\033]7;file://%%m%%~\007%%# ')
 	esac
 	if [ "$termprog" ] || [ "$winid" ]; then
 		. 9
@@ -140,8 +139,8 @@ dumb)
 	fi
 	;;
 *)
-	PS1="$P"'\w$(_gitp) % '
-	PROMPT="$P"'%~$(_gitp) %# '
+	PS1="$P"'\w$(_gitinfo) % '
+	PROMPT="$P"'%~$(_gitinfo) %# '
 esac
 unset _term
 

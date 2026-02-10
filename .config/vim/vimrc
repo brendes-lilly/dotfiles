@@ -2,7 +2,9 @@ if !has('nvim')
   set fillchars=vert:\│,tpl_vert:\│
   set pastetoggle=<C-s>
   set pumborder=single
+  set tabpanelopt=vert
   set ttymouse=sgr
+  set wildoptions=fuzzy,pum
   let s:datadir = !empty($XDG_DATA_HOME) ? $XDG_DATA_HOME : $HOME.'/.local/share/vim'
   let s:statedir = !empty($XDG_STATE_HOME) ? $XDG_STATE_HOME : $HOME.'/.local/state/vim'
   call mkdir(s:datadir, 'p', 0700)
@@ -13,6 +15,7 @@ if !has('nvim')
   let &directory = s:statedir . '/swap//,' . &directory
   let &packpath = s:datadir . ',' . &packpath
   let g:netrw_home = s:datadir
+  let g:netrw_cursor = 0
 endif
 
 let &t_ZH="\e[3m"
@@ -50,6 +53,7 @@ nnoremap <C-n> :bnext<cr>
 nnoremap <C-p> :bprevious<cr>
 nnoremap <Enter> :nohlsearch<cr>
 nnoremap <leader>b :ls<cr>:b<space>
+nnoremap B :ls<cr>:b<space>
 nnoremap <leader>d :read !datehead<cr>
 nnoremap <leader>p :lcd %:p:h<cr>
 nnoremap <leader>r :read !<C-r><C-l><cr>
@@ -67,7 +71,7 @@ augroup whitespace
 augroup END
 
 syntax on
-colorscheme calm
+colorscheme plain
 
 packadd comment
 packadd helptoc

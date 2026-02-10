@@ -42,12 +42,6 @@ if command -v apt-get >/dev/null 2>&1; then
 	fi
 fi
 
-if command -v tic >/dev/null 2>&1 && [ -d "terminfo" ]; then
-	for t in terminfo/*.terminfo; do
-		[ -f "$t" ] && tic -x "$t"
-	done
-fi
-
 if [ -d "bin" ]; then
 	find bin -type f | while read -r f; do
 		dest="${HOME}/bin/${f#bin/}"
@@ -70,6 +64,12 @@ for f in ./.*; do
 		copy_file "$f" "$dest"
 	fi
 done
+
+if command -v tic >/dev/null 2>&1 && [ -d "terminfo" ]; then
+	for t in terminfo/*.terminfo; do
+		[ -f "$t" ] && tic -o "$HOME/.terminfo" -x "$t"
+	done
+fi
 
 for f in .gitconfig .gitignore; do
 	[ -e "${HOME}/${f}" ] || [ -L "${HOME}/${f}" ] || continue

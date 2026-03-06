@@ -37,6 +37,19 @@ if [ -d "$PLAN9" ]; then
 	export NAMESPACE
 fi
 
+if command -v vim >/dev/null 2>&1; then
+	export EDITOR=vim
+else
+	export EDITOR=vi
+fi
+export VISUAL=$EDITOR
+export FCEDIT=$EDITOR
+set -o vi
+
+HISTSIZE=10000
+HISTCONTROL=ignoredups
+[ "$KSH_VERSION" ] && HISTFILE=$XDG_STATE_HOME/ksh_history
+
 export NO_COLOR=1
 export AV_LOG_FORCE_NOCOLOR=1
 export NODE_NO_READLINE=1
@@ -52,32 +65,15 @@ case $OS in darwin)
 	export HOMEBREW_NO_INSECURE_REDIRECT=1
 esac
 
-if command -v vim >/dev/null 2>&1; then
-	export EDITOR=vim
-else
-	export EDITOR=vi
-fi
-export VISUAL=$EDITOR
-export FCEDIT=$EDITOR
-set -o vi
-
-HISTSIZE=10000
-HISTCONTROL=ignoredups
-[ "$KSH_VERSION" ] && HISTFILE=$XDG_STATE_HOME/ksh_history
-
-if command ls --color=never /dev/null >/dev/null 2>&1; then
-	_ls="LC_COLLATE=C \ls --color=never"
-else
-	_ls="LC_COLLATE=C \ls"
-fi
+_ls () { LC_COLLATE=C \ls "$@" ;}
 alias cd='cd -P'
 alias ..='cd ..'
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
-alias ls="$_ls -AF"
-alias ll="$_ls -AFl"
-alias lt="$_ls -AFltr"
+alias ls='_ls -AF'
+alias ll='_ls -Al'
+alias lt='_ls -Altr'
 alias lc=ls
 alias l=ls
 alias v=$EDITOR
@@ -92,22 +88,22 @@ h() {
 }
 
 _gitinfo() { b=$(gitinfo 2>/dev/null) && printf ' [%s]' "$b"; }
-
 _term=$TERM
+
 if [ "$TERMUX_VERSION" ]; then
+	_ls () { LC_COLLATE=C \ls --color=never "$@" ;}
 	[ -z "$TMUX" ] && _term=termux
 	case "$(getprop ro.product.brand 2>/dev/null)" in
 		Onyx) export EINK=1 ;;
 	esac
 fi
 
-if [ "$SSH_CONNECTION" ]; then
+[ "$SSH_CONNECTION" ] &&
 	if [ "$CODESPACES" ]; then
 		P="${CODESPACE_NAME%-*}:"
 	else
 		P="${USER}@${H}:"
 	fi
-fi
 
 case $_term in
 xterm*|tmux*)
@@ -130,6 +126,7 @@ dumb)
 		export PAGER=p
 		PS1=': $0$(b=$(gitinfo 2>/dev/null) && printf '%s' ":$b") ; '
 		cdawd() { cd -P "$@" && awd; }
+		unalias rm
 		alias cd=cdawd
 		alias ls='9 ls -F'
 		alias ll='9 ls -Fl'

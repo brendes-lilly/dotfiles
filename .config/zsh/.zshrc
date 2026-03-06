@@ -1,19 +1,11 @@
-HISTFILE=$XDG_STATE_HOME/zsh_history
-SAVEHIST=$HISTSIZE
-setopt hist_expire_dups_first
-setopt hist_ignore_dups
-setopt hist_no_store
-setopt hist_verify
+HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh_history"
 setopt inc_append_history
 setopt prompt_subst
 setopt interactive_comments
 autoload -Uz compinit && compinit
 
 case $TERM in
-dumb)
-	unsetopt PROMPT_CR PROMPT_SP
-	unset zle_bracketed_paste
-	;;
+dumb) unsetopt zle prompt_cr prompt_sp ;;
 *)
 	autoload -z edit-command-line
 	zle -N edit-command-line

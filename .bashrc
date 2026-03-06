@@ -2,7 +2,6 @@
 
 HISTFILE=$XDG_STATE_HOME/bash_history
 HISTIGNORE='ls:lc:pwd:bg:fg:history'
-HISTFILESIZE=$HISTSIZE
 HISTTIMEFORMAT="%F %T "
 shopt -s histappend
 

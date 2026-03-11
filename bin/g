@@ -2,13 +2,32 @@
 set -e
 
 [ "$#" -ge 1 ] || {
-  echo "usage: $0 PATTERN [PATH...]" >&2
-  exit 2
+	echo "usage: $0 PATTERN [PATH...]" >&2
+	exit 2
 }
+
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+	exec git grep --color=never -n -- "$@"
+fi
 
 pat=$1
 shift
+[ "$#" -ge 1 ] || set -- .
 
+exec grep -nR -D skip --color=never -- "$pat" "$@"#!/bin/sh
+set -e
+
+[ "$#" -ge 1 ] || {
+	echo "usage: $0 PATTERN [PATH...]" >&2
+	exit 2
+}
+
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+	exec git grep --color=never -n -- "$@"
+fi
+
+pat=$1
+shift
 [ "$#" -ge 1 ] || set -- .
 
 exec grep -nR -D skip --color=never -- "$pat" "$@"

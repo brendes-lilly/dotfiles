@@ -1,0 +1,32 @@
+#!/bin/sh
+
+usage() {
+	cat >&2 <<EOF
+usage: ${0##*/} [options] [file ...]
+
+Collapse runs of horizontal whitespace.
+
+  (default)  Collapse 2 or more spaces into 1 space.
+  -w         Collapse 2 or more spaces and/or tabs into 1 space.
+  -W         Collapse 2 or more spaces and/or tabs into 1 tab.
+  -t         Collapse 2 or more tabs into 1 space.
+  -T         Collapse 2 or more tabs into 1 tab.
+EOF
+	exit 1
+}
+
+TAB=$(printf '\t')
+e="s/  */ /g"
+
+while getopts wWtT opt; do
+	case "$opt" in
+	w) e="s/[ ${TAB}][ ${TAB}]*/ /g" ;;
+	W) e="s/[ ${TAB}][ ${TAB}]*/${TAB}/g" ;;
+	t) e="s/${TAB}${TAB}${TAB}*/ /g" ;;
+	T) e="s/${TAB}${TAB}${TAB}*/${TAB}/g" ;;
+	*) usage ;;
+	esac
+done
+shift $((OPTIND - 1))
+
+sed "$e" "$@"

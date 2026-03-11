@@ -17,8 +17,7 @@ for dir in \
 	$CARGO_HOME/bin \
 	$GOPATH/bin \
 	$HOME/bin/p9p \
-	$HOME/bin/vc \
-	$HOME/bin/bio \
+	HOME/bin/bio \
 	$HOME/bin \
 	$HOME/bin/$ARCH \
 	$HOME/bin/$OS \
@@ -56,7 +55,7 @@ export NODE_NO_READLINE=1
 export FZF_DEFAULT_OPTS="--gutter=' ' --style=minimal --info=inline-right \
 	--layout=reverse --no-bold --no-unicode --no-color --color=fg+:-1,hl+:-1 \
 	--prompt=': '"
-export LESS="--mouse"
+export LESS="FRX --mouse"
 
 case $OS in darwin)
 	export BASH_SILENCE_DEPRECATION_WARNING=1

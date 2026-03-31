@@ -64,17 +64,17 @@ case $OS in darwin)
 	export HOMEBREW_NO_INSECURE_REDIRECT=1
 esac
 
-_ls () { LC_COLLATE=C \ls "$@" ;}
+_ls () { LC_COLLATE=C \ls -AF "$@" ;}
 alias cd='cd -P'
 alias ..='cd ..'
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
-alias ls='_ls -AF'
-alias ll='_ls -Al'
-alias lt='_ls -Altr'
-alias lc=ls
-alias l=ls
+alias l=_ls
+alias lc=_ls
+alias ls='_ls'
+alias ll='_ls -l'
+alias lt='ls -ltr'
 alias v=$EDITOR
 alias view="$EDITOR -R"
 

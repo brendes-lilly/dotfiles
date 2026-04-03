@@ -102,8 +102,7 @@ if command -v vim >/dev/null 2>&1; then
 fi
 
 # clean up devcontainer
-read -r -d '' whitelist <<EOF
-bierner.markdown-mermaid
+whitelist="bierner.markdown-mermaid
 charliermarsh.ruff
 crhistianr.jira-issues
 fosshaas.fontsize-shortcuts
@@ -123,8 +122,7 @@ ms-python.vscode-python-envs
 timonwong.shellcheck
 vscodevim.vim
 wisetime.branch-in-window-title
-yzhang.markdown-all-in-one
-EOF
+yzhang.markdown-all-in-one"
 
 for ext in $(code --list-extensions | egrep -v '^(Extensions|github\.|ms-.*\.)'); do
 	printf '%s\n' "$whitelist" | grep -qxF "$ext" \

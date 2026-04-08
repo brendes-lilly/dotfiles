@@ -26,7 +26,11 @@ vterm)
 	;;
 esac
 
-if [ "$HOMEBREW_PREFIX" ] && ! shopt -oq posix; then
-	f=$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh
-	[ -r $f ] && . $f
+if ! shopt -oq posix; then
+	if [ "$HOMEBREW_PREFIX" ]; then
+		f=$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh
+	else
+		f=/usr/share/bash-completion/bash_completion
+	fi
+	[ -r "$f" ] && . "$f"
 fi

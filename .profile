@@ -17,7 +17,7 @@ for dir in \
 	$CARGO_HOME/bin \
 	$GOPATH/bin \
 	$HOME/bin/p9p \
-	HOME/bin/bio \
+	$HOME/bin/bio \
 	$HOME/bin \
 	$HOME/bin/$ARCH \
 	$HOME/bin/$OS \

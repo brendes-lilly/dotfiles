@@ -6,17 +6,22 @@
 	force = push origin HEAD --force-with-lease
 	ignored = ls-files --others --exclude-standard
 	l = log --oneline --graph
-	main = "!git remote show origin | sed -n '/HEAD branch/s/.*: //p'"
+	main = !git remote show origin | sed -n '/HEAD branch/s/.*: //p'
+	my-branches = !git for-each-ref \
+		--sort=-authordate \
+		--format='%(authordate:iso8601) %(refname:short) %(authoremail)' refs/heads/ \
+		| awk -v email=\"$(git config user.email)\" '(email!=\"\" && index($0,email))' \
+		| column -t
 	nuke = update-index --force-remove
-	orphans = "ls-files --others"
+	orphans = ls-files --others
 	s = status -sb
-	si = "!git status -sb --ignored | grep ^!"
-	su = "!git status -sb --untracked | grep ^?"
-	squash = "!git rebase -v -i $(git main)"
-	sync = "!git pull origin $(git main) --rebase"
+	si = !git status -sb --ignored | grep ^!
+	su = !git status -sb --untracked | grep ^?
+	squash = !git rebase -v -i $(git main)
+	sync = !git pull origin $(git main) --rebase
 	unstage = restore --staged
 	untrack = rm --cached
-	update = "!git pull origin $(git rev-parse --abbrev-ref HEAD) --rebase"
+	update = !git pull origin $(git rev-parse --abbrev-ref HEAD) --rebase
 
 [core]
 	filemode = false

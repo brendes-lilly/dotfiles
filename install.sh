@@ -100,36 +100,3 @@ if command -v vim >/dev/null 2>&1; then
 		ln -sfn "${HOME}/.config/vim" "${HOME}/.vim"
 	fi
 fi
-
-# clean up devcontainer
-whitelist="bierner.markdown-mermaid
-charliermarsh.ruff
-crhistianr.jira-issues
-fosshaas.fontsize-shortcuts
-giorgosxou.under-scroll
-hoovercj.vscode-settings-cycler
-jannisx11.batch-rename-extension
-kahole.magit
-mhutchie.git-graph
-mkhl.shfmt
-ms-azuretools.vscode-containers
-ms-azuretools.vscode-docker
-ms-python.debugpy
-ms-python.mypy-type-checker
-ms-python.python
-ms-python.vscode-pylance
-ms-python.vscode-python-envs
-timonwong.shellcheck
-vscodevim.vim
-wisetime.branch-in-window-title
-yzhang.markdown-all-in-one"
-
-for ext in $(code --list-extensions | egrep -v '^(Extensions|github\.|ms-.*\.)'); do
-	printf '%s\n' "$whitelist" | grep -qxF "$ext" \
-		|| code --uninstall-extension "$ext"
-done
-
-printf '%s\n' "$whitelist" | while read ext; do
-	[ -z "$ext" ] && continue
-	code --install-extension "$ext"
-done

@@ -4,7 +4,7 @@ set -e
 
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 backup_dir="${HOME}/.local/share/dotfiles-backup"
-pkg="tmux tree ripgrep rsync neovim jq"
+pkg="tmux tree ripgrep rsync neovim vim jq"
 
 backup() {
 	target=$1

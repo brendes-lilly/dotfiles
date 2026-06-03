@@ -1,0 +1,14 @@
+case "$-" in
+	*i*)
+		if command -v jira >/dev/null 2>&1 &&
+			[ ! -f "$XDG_CONFIG_HOME/.jira/.config.yml" ]; then
+			if [ -n "$JIRA_API_TOKEN" ]; then
+				jira init
+			else
+				printf '%s\n' "jira not configured. Set JIRA_API_TOKEN then
+				run:"
+				printf '	%s\n' "jira init"
+			fi
+		fi
+		;;
+esac

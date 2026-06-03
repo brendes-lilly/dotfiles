@@ -1,5 +1,5 @@
 export H=$(uname -n)
-export OS=$(uname | tr 'A-Z' 'a-z')
+export OS=$(uname | tr '[:upper:]' '[:lower:]')
 export ARCH=$(uname -m)
 
 export PLAN9=$HOME/opt/plan9

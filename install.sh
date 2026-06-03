@@ -2,9 +2,15 @@
 
 set -e
 
+XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+backup_dir="${XDG_DATA_HOME}/dotfiles-backup"
+local_profile="${XDG_DATA_HOME}/profile.local"
+arch="$(uname -m | sed 's/aarch64/arm64/g')"
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
-backup_dir="${HOME}/.local/share/dotfiles-backup"
 pkg="tmux tree ripgrep rsync neovim vim jq"
+jira_version="1.7.0"
 
 backup() {
 	target=$1
@@ -28,6 +34,25 @@ copy_tree() {
 	backup "$2"
 	mkdir -p "$(dirname "$2")"
 	cp -R "$1" "$2"
+}
+
+install_jira() {
+	if command -v jira >/dev/null 2>&1 && \
+		jira version 2>/dev/null | grep -q "\"${jira_version}\""; then
+		return 0
+	fi
+
+	jira_pkg="jira_${jira_version}_linux_${arch}.tar.gz"
+	jira_url="https://github.com/ankitpokhrel/jira-cli/releases/download/v${jira_version}/${jira_pkg}"
+	tmp=$(mktemp -d)
+
+	trap 'rm -rf "$tmp"' EXIT
+	curl -fsSL "$jira_url" -o "$tmp/jira.tar.gz"
+	tar -xzf "$tmp/jira.tar.gz" -C "$tmp"
+	mkdir -p "$XDG_BIN_HOME"
+	cp "$tmp"/jira_*/bin/jira "$XDG_BIN_HOME/jira"
+	chmod 755 "$XDG_BIN_HOME/jira"
+	unset jira_pkg jira_url
 }
 
 cd "$dotfiles" || exit 1
@@ -65,6 +90,9 @@ for f in ./.*; do
 	fi
 done
 
+[ -f "$local_profile" ] || copy_file profile.local "$local_profile"
+chmod 600 "$local_profile"
+
 if command -v tic >/dev/null 2>&1 && [ -d "terminfo" ]; then
 	for t in terminfo/*.terminfo; do
 		[ -f "$t" ] && tic -o "$HOME/.terminfo" -x "$t"
@@ -100,3 +128,6 @@ if command -v vim >/dev/null 2>&1; then
 		ln -sfn "${HOME}/.config/vim" "${HOME}/.vim"
 	fi
 fi
+
+install_jira
+

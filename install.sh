@@ -115,9 +115,9 @@ if [ -d ".config" ]; then
 fi
 
 local_bashrc="${XDG_DATA_HOME}/bashrc"
-[ -f "$local_bashrc" ] || copy_file bashrc.local "$local_bashrc"
-grep 'XDG_DATA_HOME\/bashrc' $HOME/.bashrc >/dev/null ||
-	printf '\n%s\n' ". $local_bashrc" >> $HOME/.bashrc
+line='. "$XDG_DATA_HOME/bashrc"'
+grep -qF "$line" "$HOME/.bashrc" ||
+	printf '\n%s\n' "$line" >> "$HOME/.bashrc"
 
 gitconfig="${HOME}/.config/git/config"
 [ -f "$gitconfig" ] && git config --file "$gitconfig" \

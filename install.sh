@@ -129,4 +129,5 @@ if command -v vim >/dev/null 2>&1; then
 	fi
 fi
 
-install_jira
+install_jira &&
+	$XDG_BIN_HOME/jira completion bash > /etc/bash_completion.d/jira

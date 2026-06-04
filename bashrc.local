@@ -6,7 +6,6 @@ if command -v jira >/dev/null 2>&1 &&
 		printf '%s\n' "jira not configured."
 		printf '%s\n' Set JIRA_API_TOKEN then run `jira init`
 	fi
-	[ -f "$XDG_DATA_HOME/jira-completion.bash" ] ||
-		jira completion bash > "$XDG_DATA_HOME/jira-completion.bash"
-	. "$XDG_DATA_HOME/jira-completion.bash"
+	f=/etc/bash_completion.d/jira
+	[ -r "$f" ] && . "$f"
 fi

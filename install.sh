@@ -60,8 +60,9 @@ if command -v apt-get >/dev/null 2>&1; then
 	sudo=
 	[ "$(id -u)" = 0 ] || sudo=sudo
 	if [ -z "$sudo" ] || command -v sudo >/dev/null 2>&1; then
-		$sudo DEBIAN_FRONTEND=noninteractive apt-get update
-		$sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $pkg
+		export DEBIAN_FRONTEND=noninteractive
+		$sudo apt-get update
+		$sudo apt-get install -y $pkg
 	fi
 fi
 

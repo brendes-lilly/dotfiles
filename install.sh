@@ -6,7 +6,7 @@ XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 backup_dir="${XDG_DATA_HOME}/dotfiles-backup"
-local_profile="${XDG_DATA_HOME}/profile.local"
+local_bashrc="${XDG_DATA_HOME}/bashrc"
 arch="$(uname -m | sed 's/aarch64/arm64/g')"
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 pkg="tmux tree ripgrep rsync neovim vim jq"
@@ -90,9 +90,6 @@ for f in ./.*; do
 	fi
 done
 
-[ -f "$local_profile" ] || copy_file profile.local "$local_profile"
-chmod 600 "$local_profile"
-
 if command -v tic >/dev/null 2>&1 && [ -d "terminfo" ]; then
 	for t in terminfo/*.terminfo; do
 		[ -f "$t" ] && tic -o "$HOME/.terminfo" -x "$t"
@@ -117,6 +114,10 @@ if [ -d ".config" ]; then
 		fi
 	done
 fi
+
+[ -f "$local_bashrc" ] || copy_file bashrc.local "$local_bashrc"
+grep 'XDG_DATA_HOME\/bashrc' >/dev/null ||
+	printf '%s\n' ". $local_bashrc" >> $HOME/.bashrc
 
 gitconfig="${HOME}/.config/git/config"
 [ -f "$gitconfig" ] && git config --file "$gitconfig" \

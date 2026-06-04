@@ -8,7 +8,7 @@ XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 backup_dir="${XDG_DATA_HOME}/dotfiles-backup"
 arch="$(uname -m | sed 's/aarch64/arm64/')"
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
-pkg="tmux tree ripgrep rsync neovim vim jq"
+pkg="bash-completion tmux tree ripgrep rsync neovim vim jq"
 jira_version="1.7.0"
 
 backup() {

@@ -6,7 +6,7 @@ XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 backup_dir="${XDG_DATA_HOME}/dotfiles-backup"
-arch="$(uname -m | sed 's/aarch64/arm64/g')"
+arch="$(uname -m | sed 's/aarch64/arm64/')"
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 pkg="tmux tree ripgrep rsync neovim vim jq"
 jira_version="1.7.0"
@@ -31,8 +31,8 @@ copy_file() {
 
 copy_tree() {
 	backup "$2"
-	mkdir -p "$(dirname "$2")"
-	cp -Rv "$1" "$2"
+	mkdir -p "$2"
+	cp -Rv "$1"/. "$2"/
 }
 
 install_jira() {
@@ -57,12 +57,11 @@ install_jira() {
 cd "$dotfiles" || exit 1
 
 if command -v apt-get >/dev/null 2>&1; then
-	if [ "$(id -u)" = "0" ]; then
-		DEBIAN_FRONTEND=noninteractive apt-get update
-		DEBIAN_FRONTEND=noninteractive apt-get install -y $pkg
-	elif command -v sudo >/dev/null 2>&1; then
-		sudo DEBIAN_FRONTEND=noninteractive apt-get update
-		sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $pkg
+	sudo=
+	[ "$(id -u)" = 0 ] || sudo=sudo
+	if [ -z "$sudo" ] || command -v sudo >/dev/null 2>&1; then
+		$sudo DEBIAN_FRONTEND=noninteractive apt-get update
+		$sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $pkg
 	fi
 fi
 
@@ -102,33 +101,32 @@ for f in .gitconfig .gitignore; do
 done
 
 if [ -d ".config" ]; then
-	mkdir -p "${HOME}/.config"
-	for f in .config/*; do
-		[ -e "$f" ] || continue
-		dest="${HOME}/.config/$(basename "$f")"
+	mkdir -p "$XDG_CONFIG_HOME"
+	find .config -mindepth 1 -maxdepth 1 | while read -r f; do
+		dest="$XDG_CONFIG_HOME/$(basename "$f")"
 		if [ -d "$f" ]; then
 			copy_tree "$f" "$dest"
 		else
 			copy_file "$f" "$dest"
 		fi
-	done
+done
 fi
 
 local_bashrc="${XDG_DATA_HOME}/bashrc"
 line='. "$XDG_DATA_HOME/bashrc"'
 grep -qF "$line" "$HOME/.bashrc" ||
 	printf '\n%s\n' "$line" >> "$HOME/.bashrc"
+copy_file bashrc.local $local_bashrc
 
-gitconfig="${HOME}/.config/git/config"
+gitconfig="${XDG_CONFIG_HOME}/git/config"
 [ -f "$gitconfig" ] && git config --file "$gitconfig" \
 	--unset-all 'url.git@github.com:.insteadOf' 2>/dev/null || true
 
 # vim < 9.1.0327 doesn't look in ~/.config/vim
 if command -v vim >/dev/null 2>&1; then
 	if ! vim --version 2>/dev/null | grep -q '\$XDG_CONFIG_HOME/vim/vimrc'; then
-		ln -sfn "${HOME}/.config/vim" "${HOME}/.vim"
+		ln -sfn "${XDG_CONFIG_HOME}/vim" "${HOME}/.vim"
 	fi
 fi
 
 install_jira
-

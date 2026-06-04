@@ -1,16 +1,12 @@
-case "$-" in
-*i*)
-	if command -v jira >/dev/null 2>&1 &&
-		[ ! -f "$XDG_CONFIG_HOME/.jira/.config.yml" ]; then
-		if [ -n "$JIRA_API_TOKEN" ]; then
-			jira init
-		else
-			printf '%s\n' "jira not configured."
-			printf '%s\n' Set JIRA_API_TOKEN then run `jira init`
-		fi
-		[ -f "$XDG_DATA_HOME/jira-completion.bash" ] ||
-			jira completion bash > "$XDG_DATA_HOME/jira-completion.bash"
-		. "$XDG_DATA_HOME/jira-completion.bash"
+if command -v jira >/dev/null 2>&1 &&
+	[ ! -f "$XDG_CONFIG_HOME/.jira/.config.yml" ]; then
+	if [ -n "$JIRA_API_TOKEN" ]; then
+		jira init
+	else
+		printf '%s\n' "jira not configured."
+		printf '%s\n' Set JIRA_API_TOKEN then run `jira init`
 	fi
-;;
-esac
+	[ -f "$XDG_DATA_HOME/jira-completion.bash" ] ||
+		jira completion bash > "$XDG_DATA_HOME/jira-completion.bash"
+	. "$XDG_DATA_HOME/jira-completion.bash"
+fi

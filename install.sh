@@ -2,13 +2,13 @@
 
 set -e
 
-cd "$dotfiles" || exit 1
-. "${dotfiles}/scripts/lib.sh"
-
 dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
 src_dir="${dotfiles}/src"
 include_dir="${dotfiles}/include"
 pkg="bash-completion curl tmux tree ripgrep rsync neovim vim jq"
+
+cd "$dotfiles" || exit 1
+. "${dotfiles}/scripts/lib.sh"
 
 mkdir -p "$XDG_BIN_HOME" "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
 
@@ -71,7 +71,7 @@ gitconfig="${XDG_CONFIG_HOME}/git/config"
 	--unset-all 'url.git@github.com:.insteadOf' 2>/dev/null || true
 
 line='. "$XDG_DATA_HOME/bashrc"' 
-grep -qF $line "$HOME/.bashrc" || printf '\n%s\n' "$line" >> "$HOME/.bashrc"
+grep -qF "$line" "$HOME/.bashrc" || printf '\n%s\n' "$line" >> "$HOME/.bashrc"
 copy_file "${include_dir}/bashrc.local" "${XDG_DATA_HOME}/bashrc"
 
 sh "${dotfiles}/scripts/setup-vim.sh"

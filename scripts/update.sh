@@ -12,7 +12,8 @@ if [ -n "$CODESPACES" ]; then
 fi
 
 src="${1:-$HOME/usr}"
-dest="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src}"
+dest_src="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src}"
+dest_include="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src}"
 
 src_bin="${src}/bin"
 src_etc="${src}/etc"
@@ -44,7 +45,7 @@ wdump
 wmd
 '
 
-dots='bashrc profile'
+dots='bash_profile bashrc profile'
 
 xdg='
 git/config
@@ -97,30 +98,30 @@ log "Dest:   $dest"
 log
 
 for f in $bins; do
-    copy "${src_bin}/${f}" "${dest}/bin/${f}"
+    copy "${src_bin}/${f}" "${dest_src}/bin/${f}"
 done
 log
 
 for f in $dots; do
-    copy "${src_etc}/${f}" "${dest}/.${f}"
+    copy "${src_etc}/${f}" "${dest_src}/.${f}"
 done
 log
 
 for f in $xdg; do
-    copy "${src_xdg}/${f}" "${dest}/.config/${f}"
+    copy "${src_xdg}/${f}" "${dest_src}/.config/${f}"
 done
 log
 
 ghostty_ti=$(find ~/Applications "$HOMEBREW_PREFIX/Caskroom" -name "xterm-ghostty" 2>/dev/null -exec ls -t {} + | head -1)
 if [ -f "$ghostty_ti" ]; then
 	mkdir -p "$dest/terminfo"
-	TERMINFO="${ghostty_ti%/*/*}" infocmp -x xterm-ghostty > "${dest}/include/xterm-ghostty.terminfo"
+	TERMINFO="${ghostty_ti%/*/*}" infocmp -x xterm-ghostty > "${dest_include}/xterm-ghostty.terminfo"
 fi
 
 kitty_ti=$(find ~/Applications "$HOMEBREW_PREFIX/Caskroom" -name "xterm-kitty" 2>/dev/null -exec ls -t {} + | head -1)
 if [ -f "$kitty_ti" ]; then
 	mkdir -p "$dest/terminfo"
-	TERMINFO="${kitty_ti%/*/*}" infocmp -x xterm-kitty > "${dest}/include/xterm-kitty.terminfo"
+	TERMINFO="${kitty_ti%/*/*}" infocmp -x xterm-kitty > "${dest_include}/xterm-kitty.terminfo"
 fi
 
 # old vim on codespaces
@@ -128,11 +129,11 @@ vim_runtime="/opt/homebrew/share/vim/vim91/pack/dist/opt"
 vim_packs='comment helptoc'
 for p in $vim_packs; do
     if [ -d "${vim_runtime}/${p}" ]; then
-        mkdir -p "${dest}/.config/vim/pack/dist/opt/${p}"
-        cp -Rv "${vim_runtime}/${p}/." "${dest}/.config/vim/pack/dist/opt/${p}/"
+        mkdir -p "${dest_src}/.config/vim/pack/dist/opt/${p}"
+        cp -Rv "${vim_runtime}/${p}/." "${dest_src}/.config/vim/pack/dist/opt/${p}/"
     fi
 done
 log
 
-sed '/^packadd osc52/d' "${dest}/.config/vim/vimrc" > "${dest}/.config/vim/vimrc.tmp" &&
-    mv "${dest}/.config/vim/vimrc.tmp" "${dest}/.config/vim/vimrc"
+sed '/^packadd osc52/d' "${dest_src}/.config/vim/vimrc" > "${dest_src}/.config/vim/vimrc.tmp" &&
+    mv "${dest_src}/.config/vim/vimrc.tmp" "${dest_src}/.config/vim/vimrc"

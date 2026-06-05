@@ -2,59 +2,53 @@
 
 set -e
 
-XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
-XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
-backup_dir="${XDG_DATA_HOME}/dotfiles-backup"
-arch="$(uname -m | sed 's/aarch64/arm64/')"
-dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
-pkg="bash-completion tmux tree ripgrep rsync neovim vim jq"
-jira_version="1.7.0"
-
-backup() {
-	target=$1
-	[ -e "$target" ] || [ -L "$target" ] || return 0
-
-	rel=${target#"$HOME"/}
-	dest="${backup_dir}/${rel}.bak"
-	[ -e "$dest" ] && return 0
-
-	mkdir -p "$(dirname "$dest")"
-	mv "$target" "$dest"
-}
-
-copy_file() {
-	backup "$2"
-	mkdir -p "$(dirname "$2")"
-	cp -v "$1" "$2"
-}
-
-copy_tree() {
-	backup "$2"
-	mkdir -p "$2"
-	cp -Rv "$1"/. "$2"/
-}
-
-install_jira() {
-	if command -v jira >/dev/null 2>&1 && \
-		jira version 2>/dev/null | grep -q "\"${jira_version}\""; then
-		return 0
-	fi
-
-	jira_pkg="jira_${jira_version}_linux_${arch}.tar.gz"
-	jira_url="https://github.com/ankitpokhrel/jira-cli/releases/download/v${jira_version}/${jira_pkg}"
-	tmp=$(mktemp -d)
-
-	trap 'rm -rf "$tmp"' EXIT
-	curl -fsSL "$jira_url" -o "$tmp/jira.tar.gz"
-	tar -xzf "$tmp/jira.tar.gz" -C "$tmp"
-	mkdir -p "$XDG_BIN_HOME"
-	cp "$tmp"/jira_*/bin/jira "$XDG_BIN_HOME/jira"
-	chmod 755 "$XDG_BIN_HOME/jira"
-	unset jira_pkg jira_url
-}
-
 cd "$dotfiles" || exit 1
+. "${dotfiles}/scripts/lib.sh"
+
+dotfiles="/workspaces/.codespaces/.persistedshare/dotfiles"
+src_dir="${dotfiles}/src"
+include_dir="${dotfiles}/include"
+pkg="bash-completion curl tmux tree ripgrep rsync neovim vim jq"
+
+mkdir -p "$XDG_BIN_HOME" "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
+
+if [ -d "${src_dir}/bin" ]; then
+	find "${src_dir}/bin" -type f | while read -r f; do
+		dest="${HOME}/bin/${f#"${src_dir}/bin/"}"
+		mkdir -p "$(dirname "$dest")"
+		cp "$f" "$dest"
+		chmod 755 "$dest"
+	done
+fi
+
+for f in "${src_dir}"/.*; do
+	[ -e "$f" ] || continue
+	name=$(basename "$f")
+	case "$name" in .|..) continue ;; esac
+	dest="${HOME}/${name}"
+	if [ -d "$f" ]; then
+		copy_tree "$f" "$dest"
+	else
+		copy_file "$f" "$dest"
+	fi
+done
+
+if [ -d "${src_dir}/.config" ]; then
+	find "${src_dir}/.config" -mindepth 1 -maxdepth 1 | while read -r f; do
+		dest="$XDG_CONFIG_HOME/$(basename "$f")"
+		if [ -d "$f" ]; then
+			copy_tree "$f" "$dest"
+		else
+			copy_file "$f" "$dest"
+		fi
+	done
+fi
+
+if command -v tic >/dev/null 2>&1; then
+	for t in "${include_dir}"/*.terminfo; do
+		[ -f "$t" ] && tic -o "$HOME/.terminfo" -x "$t"
+	done
+fi
 
 if command -v apt-get >/dev/null 2>&1; then
 	sudo=
@@ -66,69 +60,20 @@ if command -v apt-get >/dev/null 2>&1; then
 	fi
 fi
 
-if [ -d "bin" ]; then
-	find bin -type f | while read -r f; do
-		dest="${HOME}/bin/${f#bin/}"
-		mkdir -p "$(dirname "$dest")"
-		cp "$f" "$dest"
-		chmod 755 "$dest"
-	done
-fi
-
-for f in ./.*; do
-	[ -e "$f" ] || continue
-	name=$(basename "$f")
-	case "$name" in
-		.|..|.config|.git) continue ;;
-	esac
-	dest="${HOME}/${name}"
-	if [ -d "$f" ]; then
-		copy_tree "$f" "$dest"
-	else
-		copy_file "$f" "$dest"
-	fi
-done
-
-if command -v tic >/dev/null 2>&1 && [ -d "terminfo" ]; then
-	for t in terminfo/*.terminfo; do
-		[ -f "$t" ] && tic -o "$HOME/.terminfo" -x "$t"
-	done
-fi
-
 for f in .gitconfig .gitignore; do
 	[ -e "${HOME}/${f}" ] || [ -L "${HOME}/${f}" ] || continue
 	backup "${HOME}/${f}"
 	rm -f "${HOME}/${f}"
 done
 
-if [ -d ".config" ]; then
-	mkdir -p "$XDG_CONFIG_HOME"
-	find .config -mindepth 1 -maxdepth 1 | while read -r f; do
-		dest="$XDG_CONFIG_HOME/$(basename "$f")"
-		if [ -d "$f" ]; then
-			copy_tree "$f" "$dest"
-		else
-			copy_file "$f" "$dest"
-		fi
-done
-fi
-
-local_bashrc="${XDG_DATA_HOME}/bashrc"
-line='. "$XDG_DATA_HOME/bashrc"'
-grep -qF "$line" "$HOME/.bashrc" ||
-	printf '\n%s\n' "$line" >> "$HOME/.bashrc"
-copy_file bashrc.local $local_bashrc
-
 gitconfig="${XDG_CONFIG_HOME}/git/config"
 [ -f "$gitconfig" ] && git config --file "$gitconfig" \
 	--unset-all 'url.git@github.com:.insteadOf' 2>/dev/null || true
 
-# vim < 9.1.0327 doesn't look in ~/.config/vim
-if command -v vim >/dev/null 2>&1; then
-	if ! vim --version 2>/dev/null | grep -q '\$XDG_CONFIG_HOME/vim/vimrc'; then
-		ln -sfn "${XDG_CONFIG_HOME}/vim" "${HOME}/.vim"
-	fi
-fi
+line='. "$XDG_DATA_HOME/bashrc"' 
+grep -qF $line "$HOME/.bashrc" || printf '\n%s\n' "$line" >> "$HOME/.bashrc"
+copy_file "${include_dir}/bashrc.local" "${XDG_DATA_HOME}/bashrc"
 
-install_jira &&
-	$XDG_BIN_HOME/jira completion bash > /etc/bash_completion.d/jira
+sh "${dotfiles}/scripts/setup-vim.sh"
+sh "${dotfiles}/scripts/install-jira.sh"
+

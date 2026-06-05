@@ -11,10 +11,8 @@ if [ -n "$CODESPACES" ]; then
 	exit 1
 fi
 
-script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-
 src="${1:-$HOME/usr}"
-dest="${2:-$script_dir}"
+dest="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src}"
 
 src_bin="${src}/bin"
 src_etc="${src}/etc"
@@ -116,13 +114,13 @@ log
 ghostty_ti=$(find ~/Applications "$HOMEBREW_PREFIX/Caskroom" -name "xterm-ghostty" 2>/dev/null -exec ls -t {} + | head -1)
 if [ -f "$ghostty_ti" ]; then
 	mkdir -p "$dest/terminfo"
-	TERMINFO="${ghostty_ti%/*/*}" infocmp -x xterm-ghostty > "${dest}/terminfo/xterm-ghostty.terminfo"
+	TERMINFO="${ghostty_ti%/*/*}" infocmp -x xterm-ghostty > "${dest}/include/xterm-ghostty.terminfo"
 fi
 
 kitty_ti=$(find ~/Applications "$HOMEBREW_PREFIX/Caskroom" -name "xterm-kitty" 2>/dev/null -exec ls -t {} + | head -1)
 if [ -f "$kitty_ti" ]; then
 	mkdir -p "$dest/terminfo"
-	TERMINFO="${kitty_ti%/*/*}" infocmp -x xterm-kitty > "${dest}/terminfo/xterm-kitty.terminfo"
+	TERMINFO="${kitty_ti%/*/*}" infocmp -x xterm-kitty > "${dest}/include/xterm-kitty.terminfo"
 fi
 
 # old vim on codespaces

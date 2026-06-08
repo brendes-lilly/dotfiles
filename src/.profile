@@ -1,7 +1,5 @@
 export H=$(uname -n)
 export OS=$(uname | tr '[:upper:]' '[:lower:]')
-export ARCH=$(uname -m)
-
 export PLAN9=$HOME/opt/plan9
 export GOPATH=$HOME/opt/go
 export RUSTUP_HOME=$HOME/opt/rust/rustup
@@ -19,7 +17,6 @@ for dir in \
 	$HOME/bin/p9p \
 	$HOME/bin/bio \
 	$HOME/bin \
-	$HOME/bin/$ARCH \
 	$HOME/bin/$OS \
 	$XDG_BIN_HOME
 do
@@ -64,7 +61,17 @@ case $OS in darwin)
 	export HOMEBREW_NO_INSECURE_REDIRECT=1
 esac
 
-_ls () { LC_COLLATE=C \ls -AF "$@" ;}
+_term=$TERM
+
+if [ "$TERMUX_VERSION" ]; then
+	case "$(getprop ro.product.brand 2>/dev/null)" in
+		Onyx) export EINK=1 ;;
+	esac
+	[ -z "$TMUX" ] && _term=termux
+	_ls_flags="--color=never"
+fi
+
+_ls () { LC_COLLATE=C \ls -AF $_ls_flags "$@" ;}
 alias cd='cd -P'
 alias ..='cd ..'
 alias cp='cp -i'
@@ -86,28 +93,18 @@ h() {
 	fi
 }
 
-_gitinfo() { b=$(gitinfo 2>/dev/null) && printf ' [%s]' "$b"; }
-_term=$TERM
+_gitinfo() {
+	b=$(gitinfo 2>/dev/null) &&
+	printf "${1:- [%s]}" "$b"
+}
 
-if [ "$TERMUX_VERSION" ]; then
-	_ls () { LC_COLLATE=C \ls --color=never "$@" ;}
-	[ -z "$TMUX" ] && _term=termux
-	case "$(getprop ro.product.brand 2>/dev/null)" in
-		Onyx) export EINK=1 ;;
-	esac
-fi
-
-[ "$SSH_CONNECTION" ] &&
-	if [ "$CODESPACES" ]; then
-		P="${CODESPACE_NAME%-*}:"
-	else
-		P="${USER}@${H}:"
-	fi
+P=
+[ "$SSH_CONNECTION" ] && P="${USER}@${H}:"
+[ "$CODESPACES" ] && P="${CODESPACE_NAME%-*}:"
 
 case $_term in
 xterm*|tmux*)
 	PS1='\[\e]0;'"$P"'\w$(_gitinfo)\a\]% '
-	PROMPT=$'%{\e]0;'"$P%~"'$(_gitinfo)'$'\a%}%# '
 	;;
 dumb)
 	unset FCEDIT VISUAL
@@ -117,13 +114,12 @@ dumb)
 	*comint)
 		stty -echo
 		PS1=$(printf '\033]0;\\w$(_gitinfo)\007\033]7;file://\\H\\w\007%% ')
-		PROMPT=$(printf '\033]0;%%~$(_gitinfo)\007\033]7;file://%%m%%~\007%%# ')
 	esac
 	if [ "$termprog" ] || [ "$winid" ]; then
 		. 9
 		export EDITOR=E
 		export PAGER=p
-		PS1=': $0$(b=$(gitinfo 2>/dev/null) && printf '%s' ":$b") ; '
+		PS1=': $0$(_gitinfo ":%s") ; '
 		cdawd() { cd -P "$@" && awd; }
 		unalias rm
 		alias cd=cdawd
@@ -136,10 +132,9 @@ dumb)
 	;;
 *)
 	PS1="$P"'\w$(_gitinfo) % '
-	PROMPT="$P"'%~$(_gitinfo) %# '
 esac
 unset _term
 
-if [ -r "$XDG_DATA_HOME/profile.local" ]; then
-	. "$XDG_DATA_HOME/profile.local"
+if [ -r "$XDG_CONFIG_HOME/profile" ]; then
+	. "$XDG_CONFIG_HOME/profile"
 fi

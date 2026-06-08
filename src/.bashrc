@@ -23,7 +23,6 @@ vterm)
 	[ -n "${EMACS_VTERM_PATH-}" ] &&
 		[ -r "${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh" ] &&
 		. "${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh"
-	;;
 esac
 
 if ! shopt -oq posix; then

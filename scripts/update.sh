@@ -6,14 +6,14 @@
 
 set -e
 
-if [ -n "$CODESPACES" ]; then
-	printf '%s\n' "update.sh: runs on the local machine, not inside a codespace" >&2
+if [ -n "$CODESPACES" ] || [ -n "$SSH_CONNECTION" ]; then
+	printf '%s\n' "update.sh: runs on the local machine, not on a remote machine" >&2
 	exit 1
 fi
 
 src="${1:-$HOME/usr}"
 dest_src="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src}"
-dest_include="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src}"
+dest_include="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/include}"
 
 src_bin="${src}/bin"
 src_etc="${src}/etc"
@@ -45,9 +45,9 @@ wdump
 wmd
 '
 
-dots='bash_profile bashrc profile'
+dots='bash_profile bashrc profile shrc zshenv'
 
-xdg='
+xdgs='
 git/config
 git/ignore
 nvim/after/lsp/lua_ls.lua
@@ -74,7 +74,6 @@ vim/after/plugin/git-status.vim
 vim/colors/acme.vim
 vim/colors/calm.vim
 vim/colors/chernila.vim
-vim/colors/eink.vim
 vim/colors/plain.vim
 vim/plugin/bracketed-paste.vim
 vim/plugin/colorscheme.vim
@@ -82,6 +81,8 @@ vim/plugin/git-auto-commit.vim
 vim/plugin/plug.vim
 vim/plugin/synstack.vim
 vim/vimrc
+zsh/.zprofile
+zsh/.zshrc
 '
 
 log() { printf '%s\n' "$*"; }
@@ -107,25 +108,23 @@ for f in $dots; do
 done
 log
 
-for f in $xdg; do
+for f in $xdgs; do
     copy "${src_xdg}/${f}" "${dest_src}/.config/${f}"
 done
 log
 
 ghostty_ti=$(find ~/Applications "$HOMEBREW_PREFIX/Caskroom" -name "xterm-ghostty" 2>/dev/null -exec ls -t {} + | head -1)
 if [ -f "$ghostty_ti" ]; then
-	mkdir -p "$dest/terminfo"
 	TERMINFO="${ghostty_ti%/*/*}" infocmp -x xterm-ghostty > "${dest_include}/xterm-ghostty.terminfo"
 fi
 
 kitty_ti=$(find ~/Applications "$HOMEBREW_PREFIX/Caskroom" -name "xterm-kitty" 2>/dev/null -exec ls -t {} + | head -1)
 if [ -f "$kitty_ti" ]; then
-	mkdir -p "$dest/terminfo"
 	TERMINFO="${kitty_ti%/*/*}" infocmp -x xterm-kitty > "${dest_include}/xterm-kitty.terminfo"
 fi
 
 # old vim on codespaces
-vim_runtime="/opt/homebrew/share/vim/vim91/pack/dist/opt"
+vim_runtime="/opt/homebrew/share/vim/vim92/pack/dist/opt"
 vim_packs='comment helptoc'
 for p in $vim_packs; do
     if [ -d "${vim_runtime}/${p}" ]; then

@@ -68,12 +68,11 @@ done
 
 gitconfig="${XDG_CONFIG_HOME}/git/config"
 [ -f "$gitconfig" ] && git config --file "$gitconfig" \
-	--unset-all 'url.git@github.com:.insteadOf' 2>/dev/null || true
+	--unset-all 'url.git@github.com:.insteadOf' || true
 
-line='. "$XDG_DATA_HOME/bashrc"' 
+line='. "$XDG_CONFIG_HOME/bashrc"'
 grep -qF "$line" "$HOME/.bashrc" || printf '\n%s\n' "$line" >> "$HOME/.bashrc"
-copy_file "${include_dir}/bashrc.local" "${XDG_DATA_HOME}/bashrc"
+copy_file "${include_dir}/bashrc.local" "${XDG_CONFIG_HOME}/bashrc"
 
 sh "${dotfiles}/scripts/setup-vim.sh"
 sh "${dotfiles}/scripts/install-jira.sh"
-

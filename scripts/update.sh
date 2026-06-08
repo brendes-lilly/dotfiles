@@ -13,7 +13,7 @@ fi
 
 src="${1:-$HOME/usr}"
 dest_src="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src}"
-dest_include="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src}"
+dest_include="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/include}"
 
 src_bin="${src}/bin"
 src_etc="${src}/etc"
@@ -114,13 +114,11 @@ log
 
 ghostty_ti=$(find ~/Applications "$HOMEBREW_PREFIX/Caskroom" -name "xterm-ghostty" 2>/dev/null -exec ls -t {} + | head -1)
 if [ -f "$ghostty_ti" ]; then
-	mkdir -p "$dest/terminfo"
 	TERMINFO="${ghostty_ti%/*/*}" infocmp -x xterm-ghostty > "${dest_include}/xterm-ghostty.terminfo"
 fi
 
 kitty_ti=$(find ~/Applications "$HOMEBREW_PREFIX/Caskroom" -name "xterm-kitty" 2>/dev/null -exec ls -t {} + | head -1)
 if [ -f "$kitty_ti" ]; then
-	mkdir -p "$dest/terminfo"
 	TERMINFO="${kitty_ti%/*/*}" infocmp -x xterm-kitty > "${dest_include}/xterm-kitty.terminfo"
 fi
 

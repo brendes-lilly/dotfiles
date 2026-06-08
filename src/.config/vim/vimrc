@@ -5,18 +5,18 @@ if !has('nvim')
   set tabpanelopt=vert
   set ttymouse=sgr
   set wildoptions=fuzzy,pum
-  let s:datadir =
-        \ !empty($XDG_DATA_HOME) ? $XDG_DATA_HOME : $HOME.'/.local/share/vim'
-  let s:statedir =
-        \ !empty($XDG_STATE_HOME) ? $XDG_STATE_HOME : $HOME.'/.local/state/vim'
-  call mkdir(s:datadir, 'p', 0700)
-  call mkdir(s:statedir .'/backup', 'p', 0700)
-  call mkdir(s:statedir .'/swap', 'p', 0700)
-  let &viminfofile = s:statedir . '/viminfo'
-  let &backupdir = s:statedir . '/backup//,' . &backupdir
-  let &directory = s:statedir . '/swap//,' . &directory
-  let &packpath = s:datadir . ',' . &packpath
-  let g:netrw_home = s:datadir
+  let s:xdg_data = empty($XDG_DATA_HOME) ? $HOME.'/.local/share' : $XDG_DATA_HOME
+  let s:xdg_state = empty($XDG_STATE_HOME) ? $HOME.'/.local/state' : $XDG_STATE_HOME
+  let g:vim_datadir = s:xdg_data . '/vim'
+  let g:vim_statedir = s:xdg_state . '/vim'
+  call mkdir(g:vim_datadir, 'p', 0700)
+  call mkdir(g:vim_statedir .'/backup', 'p', 0700)
+  call mkdir(g:vim_statedir .'/swap', 'p', 0700)
+  let &viminfofile = g:vim_statedir . '/viminfo'
+  let &backupdir = g:vim_statedir . '/backup//,' . &backupdir
+  let &directory = g:vim_statedir . '/swap//,' . &directory
+  let &packpath = g:vim_datadir . ',' . &packpath
+  let g:netrw_home = g:vim_datadir
   let g:netrw_cursor = 0
   packadd comment
   packadd helptoc

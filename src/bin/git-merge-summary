@@ -10,6 +10,17 @@ fi
 dest=$1
 src=$2
 
-git log origin/${dest}..origin/${src} \
-  --merges --pretty=format:"%h %s" |
-  awk '{print "-", $5}'
+is_gh() {
+	git config --get-regexp '^remote\..*\.url' 2>/dev/null |
+		grep -qi github.com
+}
+
+merges() {
+	git log "origin/$dest..origin/$src" --merges --pretty=format:'%h %s'
+}
+
+if is_gh; then
+	merges | grep -i 'pull request'
+else
+	merges
+fi

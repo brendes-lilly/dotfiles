@@ -1,6 +1,7 @@
 if has('nvim') | finish | endif
 
-let s:plug_dir = g:vim_datadir . '/pack/bundle/start'
+let s:data = empty($XDG_DATA_HOME) ? $HOME.'/.local/share' : $XDG_DATA_HOME
+let s:plug_dir = s:data . '/pack/bundle/start'
 
 let g:plug_list = [
   \ 'https://github.com/mhinz/vim-signify',

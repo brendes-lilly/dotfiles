@@ -1,0 +1,78 @@
+H=$(uname -n)
+HISTSIZE=10000
+HISTCONTROL=ignoredups
+[ "$KSH_VERSION" ] && HISTFILE=$XDG_STATE_HOME/ksh_history
+_term=$TERM
+
+if [ "$TERMUX_VERSION" ]; then
+	[ -z "$TMUX" ] && _term=
+	_ls_flags="--color=never"
+fi
+
+h() {
+	if [ $# -eq 0 ]; then
+		fc -l 1
+	else
+		fc -l 1 | grep -Fi -- "$*"
+	fi
+}
+
+_gitinfo() {
+	typeset b
+	b=$(gitinfo 2>/dev/null)
+	[ -n "$b" ] || return
+	printf "${1:-[%s]}" "$b"
+}
+
+_ls () { LC_COLLATE=C \ls -AF $_ls_flags "$@" ;}
+alias cd='cd -P'
+alias ..='cd ..'
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+alias l=_ls
+alias lc=_ls
+alias ls='_ls'
+alias ll='_ls -l'
+alias lt='ls -ltr'
+alias v=$EDITOR
+alias view="$EDITOR -R"
+
+P=
+[ "$SSH_CONNECTION" ] && P="${USER}@${H}:"
+[ "$CODESPACES" ] && P="${CODESPACE_NAME%-*}:"
+
+case $_term in
+xterm*|tmux*)
+	PS1='\[\e]0;'"$P"'\w$(_gitinfo)\a\]% '
+	;;
+dumb)
+	set +o emacs +o vi
+	if [ "$termprog" ] || [ "$winid" ]; then
+		. 9
+		cdawd() { cd -P "$@" && awd; }
+		alias cd=cdawd
+		alias ls='9 ls -F'
+		alias ll='9 ls -Fl'
+		alias lt='9 ls -Flrt'
+		alias lc='9 lc -F'
+		alias view=$PAGER
+		unalias rm
+		PS1=': $0$(_gitinfo ":%s") ; '
+		awd
+	fi
+	case $INSIDE_EMACS in
+	*comint)
+		stty -echo
+		PS1=$(printf '\033]0;\\w$(_gitinfo)\007\033]7;file://\\H\\w\007%% ')
+		;;
+	esac
+	;;
+*) 
+	PS1="$P"'\w$(_gitinfo) % '
+esac
+unset _term
+
+set -o vi
+
+[ -r "$XDG_CONFIG_HOME/shrc" ] && . "$XDG_CONFIG_HOME/shrc"

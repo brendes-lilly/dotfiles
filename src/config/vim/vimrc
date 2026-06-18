@@ -1,8 +1,5 @@
 if !has('nvim')
-  set fillchars=vert:\│,tpl_vert:\│
   set pastetoggle=<C-s>
-  set pumborder=single
-  set tabpanelopt=vert
   set ttymouse=sgr
   set wildoptions=fuzzy,pum
   let s:xdg_data = empty($XDG_DATA_HOME) ? $HOME.'/.local/share' : $XDG_DATA_HOME
@@ -20,7 +17,12 @@ if !has('nvim')
   let g:netrw_cursor = 0
   packadd comment
   packadd helptoc
-  packadd osc52
+  if v:version > 900 
+    set fillchars=vert:\│,tpl_vert:\│
+    set pumborder=single
+    set tabpanelopt=vert
+    packadd osc52
+  endif
 endif
 
 let &t_ZH="\e[3m"

@@ -1,4 +1,5 @@
-[ -r $HOME/.profile ] && . $HOME/.profile
+[[ $- != *i* ]] && return
+[[ -r $HOME/.shrc ]] && . $HOME/.shrc
 
 HISTFILE=$XDG_STATE_HOME/bash_history
 HISTIGNORE='ls:lc:pwd:bg:fg:history'
@@ -20,16 +21,14 @@ esac
 
 case $INSIDE_EMACS in
 vterm)
-	[ -n "${EMACS_VTERM_PATH-}" ] &&
-		[ -r "${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh" ] &&
-		. "${EMACS_VTERM_PATH}/etc/emacs-vterm-bash.sh"
+	f=${EMACS_VTERM_PATH:+$EMACS_VTERM_PATH/etc/emacs-vterm-bash.sh}
+	[ -r "$f" ] && . "$f"
+	unset f
 esac
 
 if ! shopt -oq posix; then
-	if [ "$HOMEBREW_PREFIX" ]; then
-		f=$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh
-	else
-		f=/usr/share/bash-completion/bash_completion
-	fi
+	f=${HOMEBREW_PREFIX:+$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh}
+	f=${f:-/usr/share/bash-completion/bash_completion}
 	[ -r "$f" ] && . "$f"
+	unset f
 fi

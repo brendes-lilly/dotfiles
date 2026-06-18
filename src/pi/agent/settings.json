@@ -1,0 +1,9 @@
+{
+  "theme": "light",
+  "defaultProvider": "github-copilot",
+  "defaultThinkingLevel": "high",
+  "enableInstallTelemetry": false,
+  "packages": [
+    "npm:@pi-stef/atlassian"
+  ]
+}

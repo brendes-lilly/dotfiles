@@ -1,10 +1,11 @@
 #!/bin/sh
 
-# Usage: update.sh [src] [dest]
-#   src   source repo
-#   dest  codespaces dotfiles repo
+# Usage: update.sh [source repo path]
 
 set -e
+
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+. "$script_dir/lib.sh"
 
 if [ -n "$CODESPACES" ] || [ -n "$SSH_CONNECTION" ]; then
 	printf '%s\n' "update.sh: runs on the local machine, not on a remote machine" >&2
@@ -12,12 +13,14 @@ if [ -n "$CODESPACES" ] || [ -n "$SSH_CONNECTION" ]; then
 fi
 
 src="${1:-$HOME/usr}"
-dest_src="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src}"
-dest_include="${2:-$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/include}"
+src_bin="$src/bin"
+src_etc="$src/etc"
+src_xdg="$src_etc/config"
 
-src_bin="${src}/bin"
-src_etc="${src}/etc"
-src_xdg="${src}/etc/config"
+dest_src="$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src"
+dest_include="$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/include"
+dest_bin="$dest_src/bin"
+dest_xdg="$dest_src/config"
 
 bins='
 1header
@@ -46,6 +49,8 @@ wmd
 '
 
 dots='bash_profile bashrc profile shrc zshenv'
+# add ${src_etc}/pi/agent/themes/plain.json (nothing else in pi/)
+# add ${src_etc}/pi/agent/AGENT.md (nothing else in pi/)
 
 xdgs='
 git/config
@@ -94,24 +99,18 @@ copy() {
     cp -v "$from" "$to"
 }
 
-log "Source: $src"
-log "Dest:   $dest"
-log
+copy_list() {
+	from_base=$1
+	to_base=$2
+	shift 2
+	for f in "$@"; do
+		copy "${from_base}/${f}" "${to_base}/${f}"
+	done
+}
 
-for f in $bins; do
-    copy "${src_bin}/${f}" "${dest_src}/bin/${f}"
-done
-log
-
-for f in $dots; do
-    copy "${src_etc}/${f}" "${dest_src}/.${f}"
-done
-log
-
-for f in $xdgs; do
-    copy "${src_xdg}/${f}" "${dest_src}/.config/${f}"
-done
-log
+copy_list "$src_bin" "$dest_bin" $bins
+copy_list "$src_etc" "$dest_src" $dots
+copy_list "$src_xdg" "$dest_xdg" $xdgs
 
 ghostty_ti=$(find ~/Applications "$HOMEBREW_PREFIX/Caskroom" -name "xterm-ghostty" 2>/dev/null -exec ls -t {} + | head -1)
 if [ -f "$ghostty_ti" ]; then
@@ -123,16 +122,5 @@ if [ -f "$kitty_ti" ]; then
 	TERMINFO="${kitty_ti%/*/*}" infocmp -x xterm-kitty > "${dest_include}/xterm-kitty.terminfo"
 fi
 
-# old vim on codespaces
-vim_runtime="/opt/homebrew/share/vim/vim92/pack/dist/opt"
-vim_packs='comment helptoc'
-for p in $vim_packs; do
-    if [ -d "${vim_runtime}/${p}" ]; then
-        mkdir -p "${dest_src}/.config/vim/pack/dist/opt/${p}"
-        cp -Rv "${vim_runtime}/${p}/." "${dest_src}/.config/vim/pack/dist/opt/${p}/"
-    fi
-done
-log
-
-sed '/^packadd osc52/d' "${dest_src}/.config/vim/vimrc" > "${dest_src}/.config/vim/vimrc.tmp" &&
-    mv "${dest_src}/.config/vim/vimrc.tmp" "${dest_src}/.config/vim/vimrc"
+# codespaces tend to have old vim
+vim_sync_opt_packs "$dest_xdg"/vim

@@ -58,7 +58,7 @@ if command -v apt-get >/dev/null 2>&1; then
 	if [ -z "$sudo" ] || command -v sudo >/dev/null 2>&1; then
 		export DEBIAN_FRONTEND=noninteractive
 		$sudo apt-get update
-		$sudo apt-get install -y "$pkg"
+		$sudo apt-get install -y $pkg
 	fi
 fi
 

@@ -8,25 +8,29 @@ export XDG_CACHE_HOME=$HOME/.cache
 export XDG_DATA_HOME=$HOME/.local/share
 export XDG_STATE_HOME=$HOME/.local/state
 export XDG_BIN_HOME=$HOME/.local/bin
-
+export ENV=$HOME/.shrc
+export LESS="FRX --mouse"
 export NO_COLOR=1
 export AV_LOG_FORCE_NOCOLOR=1
 export NODE_NO_READLINE=1
 export FZF_DEFAULT_OPTS="--gutter=' ' --style=minimal --info=inline-right \
    --layout=reverse --no-bold --no-unicode --no-color --color=fg+:-1,hl+:-1 \
    --prompt=': '"
-export LESS="FRX --mouse"
-export BASH_SILENCE_DEPRECATION_WARNING=1
-export HOMEBREW_NO_EMOJI=1
-export HOMEBREW_NO_ENV_HINTS=1
-export HOMEBREW_NO_INSECURE_REDIRECT=1
-export ENV=$HOME/.shrc
 
-if [ "$TERMUX_VERSION" ]; then
-	case "$(getprop ro.product.brand 2>/dev/null)" in
-		Onyx) export EINK=1 ;;
-	esac
-fi
+case $OS in
+darwin)
+	export BASH_SILENCE_DEPRECATION_WARNING=1
+	export HOMEBREW_NO_EMOJI=1
+	export HOMEBREW_NO_ENV_HINTS=1
+	export HOMEBREW_NO_INSECURE_REDIRECT=1
+	;;
+linux)
+	if [ "$TERMUX_VERSION" ]; then
+		case "$(getprop ro.product.brand 2>/dev/null)" in
+			Onyx) export EINK=1 ;;
+		esac
+	fi
+esac
 
 for dir in \
 	/opt/homebrew/bin \
@@ -55,15 +59,16 @@ if [ -d "$PLAN9" ]; then
 fi
 
 case $TERM in
-dumb) set +o emacs +o vi ;;
+dumb)
+	set +o emacs +o vi
+	if [ "$termprog" ] || [ "$winid" ]; then
+		export EDITOR=E PAGER=p
+	fi
+	;;
 *)
 	export EDITOR=vi
 	export VISUAL=$EDITOR
 	export FCEDIT=$EDITOR
 esac
-
-if [ "$termprog" ] || [ "$winid" ]; then
-	export EDITOR=E PAGER=p
-fi
 
 [ -r "$XDG_CONFIG_HOME/profile" ] && . "$XDG_CONFIG_HOME/profile"

@@ -1,4 +1,3 @@
-H=$(uname -n)
 HISTSIZE=10000
 HISTCONTROL=ignoredups
 [ "$KSH_VERSION" ] && HISTFILE=$XDG_STATE_HOME/ksh_history
@@ -39,8 +38,12 @@ alias v=$EDITOR
 alias view="$EDITOR -R"
 
 P=
-[ "$SSH_CONNECTION" ] && P="${USER}@${H}:"
-[ "$CODESPACES" ] && P="${CODESPACE_NAME%-*}:"
+if [ "$CODESPACES" ]; then
+	P="${CODESPACE_NAME%-*}:"
+elif [ "$SSH_CONNECTION" ]; then
+	H=$(uname -n)
+	P="${USER}@${H}:"
+fi
 
 case $_term in
 xterm*|tmux*)

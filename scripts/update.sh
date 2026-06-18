@@ -20,7 +20,7 @@ src_xdg="$src_etc/config"
 dest_src="$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src"
 dest_include="$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/include"
 dest_bin="$dest_src/bin"
-dest_xdg="$dest_src/config"
+dest_xdg="$dest_src/.config"
 
 bins='
 1header
@@ -108,9 +108,18 @@ copy_list() {
 	done
 }
 
+copy_dotlist() {
+	from_base=$1
+	to_base=$2
+	shift 2
+	for f in "$@"; do
+		copy "${from_base}/${f}" "${to_base}/.${f}"
+	done
+}
+
 copy_list "$src_bin" "$dest_bin" $bins
-copy_list "$src_etc" "$dest_src" $dots
 copy_list "$src_xdg" "$dest_xdg" $xdgs
+copy_dotlist "$src_etc" "$dest_src" $dots
 
 ghostty_ti=$(find ~/Applications "$HOMEBREW_PREFIX/Caskroom" -name "xterm-ghostty" 2>/dev/null -exec ls -t {} + | head -1)
 if [ -f "$ghostty_ti" ]; then

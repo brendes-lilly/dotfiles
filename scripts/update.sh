@@ -36,6 +36,7 @@ delws
 extract
 ff
 g
+h
 git-merge-summary
 gitinfo
 noansi

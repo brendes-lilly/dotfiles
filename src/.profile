@@ -1,4 +1,4 @@
-export OS=$(uname | tr '[:upper:]' '[:lower:]')
+export OS=$(uname | tr 'A-Z' 'a-z')
 export PLAN9=$HOME/opt/plan9
 export GOPATH=$HOME/opt/go
 export RUSTUP_HOME=$HOME/opt/rust/rustup
@@ -13,9 +13,8 @@ export LESS="FRX --mouse"
 export NO_COLOR=1
 export AV_LOG_FORCE_NOCOLOR=1
 export NODE_NO_READLINE=1
-export FZF_DEFAULT_OPTS="--gutter=' ' --style=minimal --info=inline-right \
-   --layout=reverse --no-bold --no-unicode --no-color --color=fg+:-1,hl+:-1 \
-   --prompt=': '"
+export FZF_DEFAULT_OPTS="--no-bold --no-color --no-unicode \
+	--gutter='' --style=minimal	--prompt=': '"
 
 case $OS in
 darwin)
@@ -58,11 +57,16 @@ if [ -d "$PLAN9" ]; then
 	mkdir -p "$NAMESPACE"
 fi
 
+if [ "$KSH_VERSION" ]; then
+	HOST=$(uname -n)
+	export HOST=${HOST%%.*}
+fi
+
 case $TERM in
 dumb)
-	set +o emacs +o vi
 	if [ "$termprog" ] || [ "$winid" ]; then
-		export EDITOR=E PAGER=p
+		export EDITOR=E
+		export PAGER=nobs
 	fi
 	;;
 *)

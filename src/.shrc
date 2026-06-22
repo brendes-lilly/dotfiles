@@ -1,30 +1,25 @@
-HISTSIZE=10000
 HISTCONTROL=ignoredups
 [ "$KSH_VERSION" ] && HISTFILE=$XDG_STATE_HOME/ksh_history
-_term=$TERM
-
-if [ "$TERMUX_VERSION" ]; then
-	[ -z "$TMUX" ] && _term=
-	_ls_flags="--color=never"
-fi
-
-h() {
-	if [ $# -eq 0 ]; then
-		fc -l 1
-	else
-		fc -l 1 | grep -Fi -- "$*"
-	fi
-}
+[ "$TERMUX_VERSION" ] && _ls_flags=--color=never
 
 _gitinfo() {
 	typeset b
 	b=$(gitinfo 2>/dev/null)
 	[ -n "$b" ] || return
-	printf "${1:-[%s]}" "$b"
+	printf "${1:- [%s]}" "$b"
 }
 
-_ls () { LC_COLLATE=C \ls -AF $_ls_flags "$@" ;}
-alias cd='cd -P'
+_ls () {
+	LC_COLLATE=C \ls -AF $_ls_flags "$@"
+}
+
+P=
+if [ "$CODESPACES" ]; then
+	P="${CODESPACE_NAME%-*}:"
+elif [ "$SSH_CONNECTION" ]; then
+	P="${LOGNAME}@${HOST:-$HOSTNAME}:"
+fi
+
 alias ..='cd ..'
 alias cp='cp -i'
 alias mv='mv -i'
@@ -34,48 +29,37 @@ alias lc=_ls
 alias ls='_ls'
 alias ll='_ls -l'
 alias lt='ls -ltr'
-alias v=$EDITOR
-alias view="$EDITOR -R"
 
-P=
-if [ "$CODESPACES" ]; then
-	P="${CODESPACE_NAME%-*}:"
-elif [ "$SSH_CONNECTION" ]; then
-	H=$(uname -n)
-	P="${USER}@${H}:"
-fi
-
-case $_term in
-xterm*|tmux*)
-	PS1='\[\e]0;'"$P"'\w$(_gitinfo)\a\]% '
-	;;
+case $TERM in
 dumb)
 	set +o emacs +o vi
-	if [ "$termprog" ] || [ "$winid" ]; then
-		. 9
-		cdawd() { cd -P "$@" && awd; }
-		alias cd=cdawd
-		alias ls='9 ls -F'
-		alias ll='9 ls -Fl'
-		alias lt='9 ls -Flrt'
-		alias lc='9 lc -F'
-		alias view=$PAGER
-		unalias rm
-		PS1=': $0$(_gitinfo ":%s") ; '
-		awd
-	fi
 	case $INSIDE_EMACS in
 	*comint)
 		stty -echo
 		PS1=$(printf '\033]0;\\w$(_gitinfo)\007\033]7;file://\\H\\w\007%% ')
 		;;
+	*)
+		PS1="$P"'\w$(_gitinfo) % '
 	esac
 	;;
-*) 
-	PS1="$P"'\w$(_gitinfo) % '
+*)
+	alias v=$EDITOR
+	alias view="$EDITOR -R"
+	PS1='\[\e]0;'"$P"'\w$(_gitinfo)\a\]% '
+	set -o vi
 esac
-unset _term
 
-set -o vi
+if [ "$termprog" ] || [ "$winid" ]; then
+	. 9
+	cdawd() { 9 cd "$@" && awd; }
+	alias cd=cdawd
+	alias ls='9 ls -F'
+	alias ll='9 ls -Fl'
+	alias lt='9 ls -Flrt'
+	alias lc='9 lc -F'
+	unalias rm
+	PS1=': $0$(_gitinfo ":%s") ; '
+	awd
+fi
 
 [ -r "$XDG_CONFIG_HOME/shrc" ] && . "$XDG_CONFIG_HOME/shrc"

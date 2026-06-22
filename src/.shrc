@@ -1,3 +1,5 @@
+[ -r "$HOME/.profile" ] && . "$HOME/.profile"
+
 HISTCONTROL=ignoredups
 [ "$KSH_VERSION" ] && HISTFILE=$XDG_STATE_HOME/ksh_history
 [ "$TERMUX_VERSION" ] && _ls_flags=--color=never

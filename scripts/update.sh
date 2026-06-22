@@ -50,9 +50,10 @@ wmd
 '
 
 dots='bash_profile bashrc profile shrc zshenv'
-# add ${src_etc}/pi/agent/themes/plain.json (nothing else in pi/)
-# add ${src_etc}/pi/agent/AGENT.md (nothing else in pi/)
 
+# add pi/agent/themes/plain.json
+# add pi/agent/AGENT.md
+# and nothing else in pi
 xdgs='
 git/config
 git/ignore

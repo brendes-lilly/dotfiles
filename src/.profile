@@ -62,6 +62,10 @@ if [ "$KSH_VERSION" ]; then
 	export HOST=${HOST%%.*}
 fi
 
+if [ "CODESPACES" ]; then
+	export C="${CODESPACE_NAME:+${CODESPACE_NAME%-*}}"
+fi
+
 case $TERM in
 dumb)
 	if [ "$termprog" ] || [ "$winid" ]; then

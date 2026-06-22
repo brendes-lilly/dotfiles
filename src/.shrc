@@ -13,13 +13,6 @@ _ls () {
 	LC_COLLATE=C \ls -AF $_ls_flags "$@"
 }
 
-P=
-if [ "$CODESPACES" ]; then
-	P="${CODESPACE_NAME%-*}:"
-elif [ "$SSH_CONNECTION" ]; then
-	P="${LOGNAME}@${HOST:-$HOSTNAME}:"
-fi
-
 alias ..='cd ..'
 alias cp='cp -i'
 alias mv='mv -i'
@@ -28,7 +21,16 @@ alias l=_ls
 alias lc=_ls
 alias ls='_ls'
 alias ll='_ls -l'
-alias lt='ls -ltr'
+alias lt='_ls -ltr'
+
+if [ "$SSH_CONNECTION" ]; then
+	H="${HOST:-$HOSTNAME}"
+	P="${C:-$H}"
+	U="${GITHUB_USER:-$LOGNAME}"
+	L="$U@$P"
+else
+	H= P= U= L=
+fi
 
 case $TERM in
 dumb)
@@ -43,9 +45,9 @@ dumb)
 	esac
 	;;
 *)
-	alias v=$EDITOR
+	alias v="$EDITOR"
 	alias view="$EDITOR -R"
-	PS1='\[\e]0;'"$P"'\w$(_gitinfo)\a\]% '
+	PS1='\[\e]0;'"${P:+$P:}"'\w$(_gitinfo)\a\]'"${L:+$L }"'% '
 	set -o vi
 esac
 

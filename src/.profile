@@ -73,7 +73,7 @@ case $- in
 			read -r dir
 			read -r branch
 		} <<EOF
-$(gitinfo2 2>/dev/null)
+$(gitinfo 2>/dev/null)
 EOF
 		if [ -n "$dir" ]; then
 			printf '%s%s' "$dir" "${branch:+ [$branch]}"

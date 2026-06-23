@@ -1,22 +1,33 @@
 #!/bin/sh
 
-info=$(git rev-parse --abbrev-ref HEAD --git-dir 2>/dev/null) || exit 1
+info=$(git rev-parse --git-dir --show-toplevel --show-prefix \
+	--abbrev-ref HEAD 2>/dev/null) || exit 1
 
-git_dir=${info##*
-}
-branch=${info%%
-*}
+{
+	read -r git_dir
+	read -r toplevel
+	read -r prefix
+	read -r branch
+} <<EOF
+$info
+EOF
 
-[ "$branch" = "HEAD" ] && branch=$(git rev-parse --short HEAD 2>/dev/null)
+# Detached HEAD: abbrev-ref gives "HEAD", so fall back to the short sha
+[ "$branch" = HEAD ] && branch=$(git rev-parse --short HEAD 2>/dev/null)
 
 if [ -d "$git_dir/rebase-merge" ] || [ -d "$git_dir/rebase-apply" ]; then
-	state="|REBASE"
+	state='|REBASE'
 elif [ -f "$git_dir/MERGE_HEAD" ]; then
-	state="|MERGE"
+	state='|MERGE'
 elif [ -f "$git_dir/CHERRY_PICK_HEAD" ]; then
-	state="|PICK"
+	state='|PICK'
 fi
 
-git diff-index --quiet HEAD -- 2>/dev/null || modified="*"
+git diff-index --quiet HEAD -- 2>/dev/null || modified='*'
 
-printf '%s%s%s' "$branch" "$modified" "$state"
+# cwd rooted at the repo: "reponame/sub/dir", or just "reponame" at the top.
+root=${toplevel##*/}
+prefix=${prefix%/}
+[ -n "$prefix" ] && root="$root/$prefix"
+
+printf '%s\n%s%s%s\n' "$root" "$branch" "$modified" "$state"

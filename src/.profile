@@ -8,7 +8,7 @@ export XDG_CACHE_HOME=$HOME/.cache
 export XDG_DATA_HOME=$HOME/.local/share
 export XDG_STATE_HOME=$HOME/.local/state
 export XDG_BIN_HOME=$HOME/.local/bin
-export ENV=$HOME/.shrc
+export ENV=$HOME/.profile
 export LESS="FRX --mouse"
 export NO_COLOR=1
 export AV_LOG_FORCE_NOCOLOR=1
@@ -54,7 +54,7 @@ if [ -d "$PLAN9" ]; then
 		*) PATH=$PATH:$PLAN9/bin ;;
 	esac
 	export NAMESPACE=/tmp/ns.$LOGNAME
-	mkdir -p "$NAMESPACE"
+	[ -d "$NAMESPACE" ] && mkdir -p "$NAMESPACE"
 fi
 
 if [ "$KSH_VERSION" ]; then
@@ -62,21 +62,90 @@ if [ "$KSH_VERSION" ]; then
 	export HOST=${HOST%%.*}
 fi
 
-if [ "CODESPACES" ]; then
-	export C="${CODESPACE_NAME:+${CODESPACE_NAME%-*}}"
-fi
+case $- in
+*i*)
+	HISTCONTROL=ignoredups
+	[ "$KSH_VERSION" ] && HISTFILE=$XDG_STATE_HOME/ksh_history
+	[ "$TERMUX_VERSION" ] && _ls_flags=--color=never
 
-case $TERM in
-dumb)
+	_gitinfo() {
+		{
+			read -r dir
+			read -r branch
+		} <<EOF
+$(gitinfo2 2>/dev/null)
+EOF
+		if [ -n "$dir" ]; then
+			printf '%s%s' "$dir" "${branch:+ [$branch]}"
+		else
+			printf '%s' "$PWD"
+			# case $PWD in
+			# "$HOME") printf '~' ;;
+			# "$HOME"/*) printf '~%s' "${PWD#"$HOME"}" ;;
+			# *) printf '%s' "$PWD" ;;
+			# esac
+		fi
+	}
+
+	_ls () {
+		LC_COLLATE=C \ls -AF $_ls_flags "$@"
+	}
+
+	if [ "$CODESPACES" ]; then
+		C="${CODESPACE_NAME:+${CODESPACE_NAME%-*}}"
+	fi
+
+	if [ "$SSH_CONNECTION" ]; then
+		H="${HOST:-$HOSTNAME}"
+		P="${C:-$H}"
+		U="${GITHUB_USER:-$LOGNAME}"
+		L="$U@$P"
+	fi
+
+	case $TERM in
+	dumb)
+		set +o emacs +o vi
+		PS1="$P"'$(_gitinfo) % '
+		;;
+	*)
+		export EDITOR=vi
+		export VISUAL=$EDITOR
+		export FCEDIT=$EDITOR
+		set -o vi
+		alias v="$EDITOR"
+		alias view="$EDITOR -R"
+		PS1='\[\e]0;'"${P:+$P:}"'$(_gitinfo)\a\]'"${L:+$L }"'% '
+	esac
+
+	alias ..='cd ..'
+
 	if [ "$termprog" ] || [ "$winid" ]; then
+		. 9
 		export EDITOR=E
 		export PAGER=nobs
+		cdawd() { 9 cd "$@" && awd; }
+		alias cd=cdawd
+		alias ls='9 ls -F'
+		alias ll='9 ls -Fl'
+		alias lt='9 ls -Flrt'
+		alias lc='9 lc -F'
+		PS1=': $0$(_gitinfo ":%s") ; '
+		awd
+	else
+		alias cp='cp -i'
+		alias mv='mv -i'
+		alias rm='rm -i'
+		alias l=_ls
+		alias lc=_ls
+		alias ls='_ls'
+		alias ll='_ls -l'
+		alias lt='_ls -ltr'
 	fi
-	;;
-*)
-	export EDITOR=vi
-	export VISUAL=$EDITOR
-	export FCEDIT=$EDITOR
+
+	case $INSIDE_EMACS in *comint)
+		stty -echo
+		PS1=$(printf '\033]0;$(_gitinfo)\007\033]7;file://\\H\\w\007%% ')
+	esac
 esac
 
 [ -r "$XDG_CONFIG_HOME/profile" ] && . "$XDG_CONFIG_HOME/profile"

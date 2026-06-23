@@ -1,9 +1,8 @@
 [[ $- != *i* ]] && return
-[[ -r $HOME/.shrc ]] && . $HOME/.shrc
+[[ -r $HOME/.profile ]] && . $HOME/.profile
 
 HISTFILE=$XDG_STATE_HOME/bash_history
 HISTIGNORE='ls:lc:pwd:bg:fg:history'
-HISTTIMEFORMAT="%F %T "
 shopt -s histappend
 
 case $TERM in

@@ -49,7 +49,7 @@ wdump
 wmd
 '
 
-dots='bash_profile bashrc profile shrc zshenv'
+dots='bash_profile bashrc profile zshenv'
 
 # add pi/agent/themes/plain.json
 # add pi/agent/AGENT.md

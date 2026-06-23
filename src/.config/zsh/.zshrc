@@ -1,4 +1,4 @@
-[[ -f $HOME/.shrc ]] && . $HOME/.shrc
+[[ -f $HOME/.profile ]] && . $HOME/.profile
 
 HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh_history"
 setopt inc_append_history
@@ -17,7 +17,7 @@ xterm*|tmux*)
 	bindkey -M viins '^H' backward-delete-char
 	bindkey -M viins '^W' backward-kill-word
 	bindkey -M viins '^U' backward-kill-line
-	PROMPT=$'%{\e]0;'"$P%~"'$(_gitinfo)'$'\a%}%# '
+	PROMPT=$'%{\e]0;'"${P:+$P:}"'$(_gitinfo)'$'\a%}'"${L:+$L }"'%# '
 	;;
 dumb)
 	unsetopt zle prompt_cr prompt_sp
@@ -28,7 +28,7 @@ esac
 
 case $INSIDE_EMACS in
 *comint)
-	PROMPT=$(printf '\033]0;%%~$(_gitinfo)\007\033]7;file://%%m%%~\007%%# ')
+	PROMPT=$(printf '\033]0;$(_gitinfo)\007\033]7;file://%%m%%~\007%%# ')
 	;;
 vterm)
 	vterm_prompt_notify() {

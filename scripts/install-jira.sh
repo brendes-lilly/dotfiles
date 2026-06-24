@@ -28,4 +28,4 @@ chmod 755 "$XDG_BIN_HOME/jira"
 "$XDG_BIN_HOME/jira" completion bash > "${tmp}/jira.bash"
 sudo mv "${tmp}/jira.bash" /etc/bash_completion.d/jira
 
-copy_file "${script_dir}/../src/config/.jira/jira.sh" ${XDG_CONFIG_HOME}/.jira/jira.sh
+copy_file "${script_dir}/../src/.config/.jira/jira.sh" ${XDG_CONFIG_HOME}/.jira/jira.sh

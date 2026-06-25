@@ -53,8 +53,9 @@ if [ -d "$PLAN9" ]; then
 		*":$PLAN9/bin:"*) ;;
 		*) PATH=$PATH:$PLAN9/bin ;;
 	esac
-	export NAMESPACE=/tmp/ns.$LOGNAME
-	[ -d "$NAMESPACE" ] && mkdir -p "$NAMESPACE"
+	display=$(printf '%s' "${DISPLAY:-:0}" | tr '/' '_')
+	export NAMESPACE=/tmp/ns.$LOGNAME.$display
+	mkdir -p "$NAMESPACE"
 fi
 
 if [ "$KSH_VERSION" ]; then
@@ -67,23 +68,25 @@ case $- in
 	HISTCONTROL=ignoredups
 	[ "$KSH_VERSION" ] && HISTFILE=$XDG_STATE_HOME/ksh_history
 	[ "$TERMUX_VERSION" ] && _ls_flags=--color=never
+	PS1SYM='%'
 
 	_gitinfo() {
 		{
 			read -r dir
 			read -r branch
-		} <<EOF
-$(gitinfo 2>/dev/null)
-EOF
+		} <<-EOF
+		$(gitinfo 2>/dev/null)
+		EOF
 		if [ -n "$dir" ]; then
 			printf '%s%s' "$dir" "${branch:+ [$branch]}"
 		else
-			printf '%s' "$PWD"
+			# try no tilde
 			# case $PWD in
 			# "$HOME") printf '~' ;;
 			# "$HOME"/*) printf '~%s' "${PWD#"$HOME"}" ;;
 			# *) printf '%s' "$PWD" ;;
 			# esac
+			printf '%s' "$PWD"
 		fi
 	}
 
@@ -105,7 +108,7 @@ EOF
 	case $TERM in
 	dumb)
 		set +o emacs +o vi
-		PS1="$P"'$(_gitinfo) % '
+		PS1="${P:+$P:}"'$(_gitinfo)'"${L:+$L }"'${PS1SYM} '
 		;;
 	*)
 		export EDITOR=vi
@@ -114,7 +117,7 @@ EOF
 		set -o vi
 		alias v="$EDITOR"
 		alias view="$EDITOR -R"
-		PS1='\[\e]0;'"${P:+$P:}"'$(_gitinfo)\a\]'"${L:+$L }"'% '
+		PS1='\[\e]0;'"${P:+$P:}"'$(_gitinfo)\a\]'"${L:+$L }"'${PS1SYM} '
 	esac
 
 	alias ..='cd ..'

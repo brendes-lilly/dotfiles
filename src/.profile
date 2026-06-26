@@ -1,4 +1,6 @@
-export OS=$(uname | tr 'A-Z' 'a-z')
+os=$(uname -s | tr 'A-Z' 'a-z')
+host=$(uname -n)
+export HOST=${host%%.*}
 export PLAN9=$HOME/opt/plan9
 export GOPATH=$HOME/opt/go
 export RUSTUP_HOME=$HOME/opt/rust/rustup
@@ -8,7 +10,10 @@ export XDG_CACHE_HOME=$HOME/.cache
 export XDG_DATA_HOME=$HOME/.local/share
 export XDG_STATE_HOME=$HOME/.local/state
 export XDG_BIN_HOME=$HOME/.local/bin
-export ENV=$HOME/.profile
+export ENV=$HOME/.kshrc
+export EDITOR=vi
+export VISUAL=$EDITOR
+export PAGER=less
 export LESS="FRX --mouse"
 export NO_COLOR=1
 export AV_LOG_FORCE_NOCOLOR=1
@@ -16,7 +21,7 @@ export NODE_NO_READLINE=1
 export FZF_DEFAULT_OPTS="--no-bold --no-color --no-unicode \
 	--gutter='' --style=minimal	--prompt=': '"
 
-case $OS in
+case $os in
 darwin)
 	export BASH_SILENCE_DEPRECATION_WARNING=1
 	export HOMEBREW_NO_EMOJI=1
@@ -25,6 +30,7 @@ darwin)
 	;;
 linux)
 	if [ "$TERMUX_VERSION" ]; then
+		lsopts=--color=never
 		case "$(getprop ro.product.brand 2>/dev/null)" in
 			Onyx) export EINK=1 ;;
 		esac
@@ -38,7 +44,7 @@ for dir in \
 	$HOME/bin/p9p \
 	$HOME/bin/bio \
 	$HOME/bin \
-	$HOME/bin/$OS \
+	$HOME/bin/$os \
 	$XDG_BIN_HOME
 do
 	[ -d "$dir" ] &&
@@ -58,19 +64,18 @@ if [ -d "$PLAN9" ]; then
 	mkdir -p "$NAMESPACE"
 fi
 
-if [ "$KSH_VERSION" ]; then
-	HOST=$(uname -n)
-	export HOST=${HOST%%.*}
-fi
-
 case $- in
 *i*)
+	FCEDIT=$EDITOR
 	HISTCONTROL=ignoredups
-	[ "$KSH_VERSION" ] && HISTFILE=$XDG_STATE_HOME/ksh_history
-	[ "$TERMUX_VERSION" ] && _ls_flags=--color=never
-	PS1SYM='%'
+	PYTHON_HISTORY="${XDG_STATE_HOME}/python/history"
+	alias ..='cd ..'
+	alias cp='cp -i'
+	alias mv='mv -i'
+	alias v="$EDITOR"
+	set -o vi
 
-	_gitinfo() {
+	_pwdinfo() {
 		{
 			read -r dir
 			read -r branch
@@ -78,49 +83,49 @@ case $- in
 		$(gitinfo 2>/dev/null)
 		EOF
 		if [ -n "$dir" ]; then
-			printf '%s%s' "$dir" "${branch:+ [$branch]}"
+			printf '%s%s' "$dir" "${branch:+[$branch]}"
 		else
-			# try no tilde
-			# case $PWD in
-			# "$HOME") printf '~' ;;
-			# "$HOME"/*) printf '~%s' "${PWD#"$HOME"}" ;;
-			# *) printf '%s' "$PWD" ;;
-			# esac
-			printf '%s' "$PWD"
+			case $PWD in
+			"$HOME") printf '~' ;;
+			"$HOME"/*) printf '~%s' "${PWD#"$HOME"}" ;;
+			*) printf '%s' "$PWD" ;;
+			# *) printf '%s' "${PWD##*/}" ;;
+			esac
 		fi
 	}
 
 	_ls () {
-		LC_COLLATE=C \ls -AF $_ls_flags "$@"
+		LC_COLLATE=C \ls -AF $lsopts "$@"
 	}
 
-	if [ "$CODESPACES" ]; then
-		C="${CODESPACE_NAME:+${CODESPACE_NAME%-*}}"
-	fi
+	C="${CODESPACE_NAME:-${CODESPACE_NAME%-*}}"
 
 	if [ "$SSH_CONNECTION" ]; then
-		H="${HOST:-$HOSTNAME}"
-		P="${C:-$H}"
-		U="${GITHUB_USER:-$LOGNAME}"
-		L="$U@$P"
+		P="${C:-${HOST:-${HOSTNAME}}}"
+		U="${GITHUB_USER:-${LOGNAME}}"
 	fi
 
+	ppre=':'
+	psuf='; '
+	pinfo="${P:+${P}:}"'$(_pwdinfo)'
+	pbell='\[\e]0;'${pinfo}'\a\]'
+	pfull="${U:+${U}@}"${pinfo}
+	pdumb=${ppre}${pfull}${psuf}
+	PS1=${pbell}${psuf}
+
 	case $TERM in
+	xterm*)
+		if [ "$TERMUX_VERSION" ]; then
+			PS1=${pbell}${ppre}${pfull}${psuf}
+		fi
+		;;
+	screen*|tmux*) ;;
 	dumb)
 		set +o emacs +o vi
-		PS1="${P:+$P:}"'$(_gitinfo)'"${L:+$L }"'${PS1SYM} '
+		PS1=${pdumb}
 		;;
-	*)
-		export EDITOR=vi
-		export VISUAL=$EDITOR
-		export FCEDIT=$EDITOR
-		set -o vi
-		alias v="$EDITOR"
-		alias view="$EDITOR -R"
-		PS1='\[\e]0;'"${P:+$P:}"'$(_gitinfo)\a\]'"${L:+$L }"'${PS1SYM} '
+	*) PS1=${pdumb} ;;
 	esac
-
-	alias ..='cd ..'
 
 	if [ "$termprog" ] || [ "$winid" ]; then
 		. 9
@@ -132,11 +137,9 @@ case $- in
 		alias ll='9 ls -Fl'
 		alias lt='9 ls -Flrt'
 		alias lc='9 lc -F'
-		PS1=': $0$(_gitinfo ":%s") ; '
+		PS1=':; '
 		awd
 	else
-		alias cp='cp -i'
-		alias mv='mv -i'
 		alias rm='rm -i'
 		alias l=_ls
 		alias lc=_ls
@@ -147,8 +150,11 @@ case $- in
 
 	case $INSIDE_EMACS in *comint)
 		stty -echo
-		PS1=$(printf '\033]0;$(_gitinfo)\007\033]7;file://\\H\\w\007%% ')
+		PS1=$(printf '\033]0;$(_pwdinfo)\007\033]7;file://\\H\\w\007${ppre}${psuf}')
 	esac
 esac
 
-[ -r "$XDG_CONFIG_HOME/profile" ] && . "$XDG_CONFIG_HOME/profile"
+local_env="$HOME/.profile.local"
+if [ -r $local_env ]; then
+	. $local_env
+fi

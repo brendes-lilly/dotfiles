@@ -1,7 +1,7 @@
 [[ $- != *i* ]] && return
 [[ -r $HOME/.profile ]] && . $HOME/.profile
 
-HISTFILE=$XDG_STATE_HOME/bash_history
+HISTFILE="${XDG_STATE_HOME}/bash/history"
 HISTIGNORE='ls:lc:pwd:bg:fg:history'
 shopt -s histappend
 

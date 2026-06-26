@@ -15,11 +15,13 @@ fi
 src="${1:-$HOME/usr}"
 src_bin="$src/bin"
 src_etc="$src/etc"
+src_lib="$src/lib"
 src_xdg="$src_etc/config"
 
 dest_src="$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/src"
 dest_include="$(git -C "$(dirname -- "$0")" rev-parse --show-toplevel)/include"
 dest_bin="$dest_src/bin"
+dest_lib="$dest_src/lib"
 dest_xdg="$dest_src/.config"
 
 bins='
@@ -50,10 +52,7 @@ wmd
 '
 
 dots='bash_profile bashrc profile zshenv'
-
-# add pi/agent/themes/plain.json
-# add pi/agent/AGENT.md
-# and nothing else in pi
+libs='AGENT.md'
 xdgs='
 git/config
 git/ignore
@@ -64,6 +63,7 @@ nvim/plugin/fzf.lua
 nvim/plugin/lsp.lua
 nvim/plugin/neotree.lua
 nvim/plugin/pkg.lua
+pi/agent/themes/plain.json
 tmux/tmux.conf
 vim/after/ftplugin/c.vim
 vim/after/ftplugin/gitcommit.vim
@@ -120,6 +120,7 @@ copy_dotlist() {
 }
 
 copy_list "$src_bin" "$dest_bin" $bins
+copy_list "$src_lib" "$dest_lib" $libs
 copy_list "$src_xdg" "$dest_xdg" $xdgs
 copy_dotlist "$src_etc" "$dest_src" $dots
 

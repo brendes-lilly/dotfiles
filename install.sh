@@ -5,8 +5,8 @@ set -e
 dotfiles=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 src_dir="${dotfiles}/src"
 src_bin="${src_dir}/bin"
+src_lib="${src_dir}/lib"
 src_include="${dotfiles}/include"
-
 pkg="bash-completion curl tmux tree ripgrep rsync vim jq"
 
 . "${dotfiles}/scripts/lib.sh"
@@ -30,6 +30,8 @@ find "$src_dir" -type f -not -path "${src_bin}/*" | while read -r f; do
 	esac
 	copy_file "$f" "$dest"
 done
+
+copy_tree "${src_lib}" "${HOME}/lib"
 
 if command -v tic >/dev/null 2>&1; then
 	for t in "${src_include}"/*.terminfo; do
@@ -57,5 +59,10 @@ gitconfig="${XDG_CONFIG_HOME}/git/config"
 [ -f "$gitconfig" ] && git config --file "$gitconfig" \
 	--unset-all 'url.git@github.com:.insteadOf' || true
 
+repo_dir="/workspaces/${GITHUB_REPOSITORY#*/}"
+mkdir -p "${repo_dir}/.github"
+ln -sfn "$(realpath "${HOME}/lib/AGENT.md")" "${repo_dir}/.github/copilot-instructions.md"
+
 sh "${dotfiles}/scripts/setup-vim.sh"
 sh "${dotfiles}/scripts/install-jira.sh"
+sh "${dotfiles}/scripts/install-pi.sh"

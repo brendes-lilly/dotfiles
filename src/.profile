@@ -9,6 +9,8 @@ export XDG_DATA_HOME=$HOME/.local/share
 export XDG_STATE_HOME=$HOME/.local/state
 export XDG_BIN_HOME=$HOME/.local/bin
 export ENV=$HOME/.profile
+export EDITOR=vi
+export VISUAL=$EDITOR
 export LESS="FRX --mouse"
 export NO_COLOR=1
 export AV_LOG_FORCE_NOCOLOR=1
@@ -65,10 +67,13 @@ fi
 
 case $- in
 *i*)
+	FCEDIT=$EDITOR
 	HISTCONTROL=ignoredups
 	[ "$KSH_VERSION" ] && HISTFILE=$XDG_STATE_HOME/ksh_history
 	[ "$TERMUX_VERSION" ] && _ls_flags=--color=never
-	PS1SYM='%'
+	alias v="$EDITOR"
+	alias view="$EDITOR -R"
+	set -o vi
 
 	_gitinfo() {
 		{
@@ -78,7 +83,7 @@ case $- in
 		$(gitinfo 2>/dev/null)
 		EOF
 		if [ -n "$dir" ]; then
-			printf '%s%s' "$dir" "${branch:+ [$branch]}"
+			printf '%s%s' "$dir" "${branch:+[$branch]}"
 		else
 			# try no tilde
 			# case $PWD in
@@ -99,28 +104,33 @@ case $- in
 	fi
 
 	if [ "$SSH_CONNECTION" ]; then
-		H="${HOST:-$HOSTNAME}"
-		P="${C:-$H}"
+		P="${C:-${HOST:-$HOSTNAME}}"
 		U="${GITHUB_USER:-$LOGNAME}"
-		L="$U@$P"
 	fi
 
+	pinfo="${P:+$P:}"'$(_gitinfo)'
+	title='\[\e]0;'${pinfo}'\a\]'
+	psym='% '
+	pmain="${U:+$U@}"${pinfo}${psym}
+	PS1=${title}${psym}
+	
 	case $TERM in
+	xterm*)
+		if [ "$TERMUX_VERSION" ]; then
+			PS1=${title}${pmain}
+		fi
+		;;
+	screen*|tmux*) ;;
 	dumb)
 		set +o emacs +o vi
-		PS1="${P:+$P:}"'$(_gitinfo)'"${L:+$L }"'${PS1SYM} '
+		PS1=${pinfo}${pmain}
 		;;
-	*)
-		export EDITOR=vi
-		export VISUAL=$EDITOR
-		export FCEDIT=$EDITOR
-		set -o vi
-		alias v="$EDITOR"
-		alias view="$EDITOR -R"
-		PS1='\[\e]0;'"${P:+$P:}"'$(_gitinfo)\a\]'"${L:+$L }"'${PS1SYM} '
+	*) PS1=${pinfo}${pmain} ;;
 	esac
 
 	alias ..='cd ..'
+	alias cp='cp -i'
+	alias mv='mv -i'
 
 	if [ "$termprog" ] || [ "$winid" ]; then
 		. 9
@@ -135,8 +145,6 @@ case $- in
 		PS1=': $0$(_gitinfo ":%s") ; '
 		awd
 	else
-		alias cp='cp -i'
-		alias mv='mv -i'
 		alias rm='rm -i'
 		alias l=_ls
 		alias lc=_ls
@@ -151,4 +159,6 @@ case $- in
 	esac
 esac
 
-[ -r "$XDG_CONFIG_HOME/profile" ] && . "$XDG_CONFIG_HOME/profile"
+if [ -r "$XDG_CONFIG_HOME/profile" ]; then
+	. "$XDG_CONFIG_HOME/profile"
+fi

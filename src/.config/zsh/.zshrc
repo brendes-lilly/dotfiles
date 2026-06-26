@@ -2,10 +2,10 @@
 
 HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh_history"
 setopt inc_append_history
-setopt prompt_subst
 setopt interactive_comments
-autoload -Uz compinit &&
-	compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump"
+setopt prompt_subst
+autoload -Uz compinit
+compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump"
 
 case $TERM in
 xterm*|tmux*)

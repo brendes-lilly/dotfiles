@@ -2,10 +2,10 @@ REPO = $(shell pwd)
 SCRIPTS_DIR = $(REPO)/scripts
 
 install:
-	./install.sh
+	sh install.sh
 
 update:
-	if [ -z $$GITHUB_REPOSITORY ] || [ -z $$CODESPACES ]; then \
+	@if [ -z "$$GITHUB_REPOSITORY" ] || [ -z "$$CODESPACES" ]; then \
 		echo "Not in a codespace; exiting"; \
 		exit 1; \
 	else \
@@ -15,7 +15,7 @@ update:
 	fi
 	
 sync:
-	$(SCRIPTS_DIR)/sync.sh
+	sh $(SCRIPTS_DIR)/sync.sh
 
 
 .PHONY: install update sync

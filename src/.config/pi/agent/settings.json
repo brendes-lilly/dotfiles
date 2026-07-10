@@ -1,6 +1,6 @@
 {
-  "defaultThinkingLevel": "medium"
+  "defaultThinkingLevel": "medium",
   "enableInstallTelemetry": false,
   "outputPad": 0,
-  "theme": "plain",
+  "theme": "plain"
 }

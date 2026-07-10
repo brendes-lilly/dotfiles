@@ -2,7 +2,7 @@ REPO = $(shell pwd)
 SCRIPTS_DIR = $(REPO)/scripts
 
 install:
-	$(SCRIPTS_DIR)/install.sh
+	./install.sh
 
 update:
 	if [ -z $$GITHUB_REPOSITORY ] || [ -z $$CODESPACES ]; then \
@@ -10,7 +10,6 @@ update:
 		exit 1; \
 	else \
 		cd $(REPO); \
-		git stash; \
 		git pull; \
 		$(MAKE) install; \
 	fi

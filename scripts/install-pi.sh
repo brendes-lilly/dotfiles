@@ -36,6 +36,7 @@ if ! command -v pi >/dev/null 2>&1; then
 fi
 
 pi update || echo "warning: pi update failed" >&2
+pi update --extensions || echo "warning: pi update failed" >&2
 
 packages="
 git:github.com/elpapi42/pi-fork

@@ -63,6 +63,7 @@ nvim/plugin/fzf.lua
 nvim/plugin/lsp.lua
 nvim/plugin/neotree.lua
 nvim/plugin/pkg.lua
+pi/agent/settings.json
 pi/agent/themes/plain.json
 tmux/tmux.conf
 vim/after/ftplugin/c.vim

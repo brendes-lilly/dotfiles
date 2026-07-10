@@ -98,20 +98,20 @@ case $- in
 		LC_COLLATE=C \ls -AF $lsopts "$@"
 	}
 
-	C="${CODESPACE_NAME:+${CODESPACE_NAME%-*}}"
+	c="${CODESPACE_NAME:+${CODESPACE_NAME%-*}}"
 
 	if [ "$SSH_CONNECTION" ]; then
-		P="${C:-${HOST:-${HOSTNAME}}}"
-		U="${GITHUB_USER:-${LOGNAME}}"
+		p="${c:-${HOST:-${HOSTNAME}}}"
+		u="${GITHUB_USER:-${LOGNAME}}"
 	fi
 
 	ppre=':'
 	psuf='; '
 	pinfo="${P:+${P}:}"'$(_pwdinfo)'
 	pbell='\[\e]0;'${pinfo}'\a\]'
-	pfull="${U:+${U}@}"${pinfo}
+	pfull="${u:+${u}@}"${pinfo}
 	pdumb=${ppre}${pfull}${psuf}
-	PS1=${pbell}${psuf}
+	PS1=${pbell}${p}${psuf}
 
 	case $TERM in
 	xterm*)

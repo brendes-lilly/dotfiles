@@ -98,7 +98,7 @@ case $- in
 		LC_COLLATE=C \ls -AF $lsopts "$@"
 	}
 
-	C="${CODESPACE_NAME:-${CODESPACE_NAME%-*}}"
+	C="${CODESPACE_NAME:+${CODESPACE_NAME%-*}}"
 
 	if [ "$SSH_CONNECTION" ]; then
 		P="${C:-${HOST:-${HOSTNAME}}}"

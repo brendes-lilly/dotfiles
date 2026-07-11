@@ -36,17 +36,17 @@ if ! command -v pi >/dev/null 2>&1; then
 fi
 
 pi update || echo "warning: pi update failed" >&2
-pi update --extensions || echo "warning: pi update failed" >&2
+# pi update --extensions || echo "warning: pi update failed" >&2
 
 packages="
 git:github.com/elpapi42/pi-fork
-npm:pi-observational-memory
 git:github.com/elpapi42/pi-minimal-subagent
-npm:pi-x-ide
-npm:context-mode
 npm:@pi-stef/atlassian
 npm:@piotr-oles/pi-cwd
+npm:context-mode
 npm:pi-btw
+npm:pi-observational-memory
+npm:pi-x-ide
 "
 
 for pkg in $packages; do

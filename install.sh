@@ -3,44 +3,37 @@
 set -e
 
 dotfiles=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-src_dir="${dotfiles}/src"
-src_bin="${src_dir}/bin"
-src_lib="${src_dir}/lib"
-src_include="${dotfiles}/include"
+usr_dir="${dotfiles}/usr"
+include_dir="${dotfiles}/include"
 pkg="bash-completion curl tmux tree ripgrep rsync vim jq"
 
 . "${dotfiles}/scripts/lib.sh"
 
 mkdir -p "$XDG_BIN_HOME" "$XDG_CACHE_HOME" "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
 
-pi_settings_src="${src_dir}/.config/pi/agent/settings.json"
+# merge json, don't copy over
+pi_settings_src="${usr_dir}/etc/config/pi/agent/settings.json"
 pi_settings_dst="${XDG_CONFIG_HOME}/pi/agent/settings.json"
 
-if [ -d "$src_bin" ]; then
-	find "$src_bin" -type f | while read -r f; do
-		dest="${HOME}/bin/${f#"${src_bin}/"}"
+find "$usr_dir" -type f ! -path "$pi_settings_src" | while read -r f; do
+	rel=${f#"${usr_dir}/"}
+	case "$rel" in
+	bin/*)
+		dest="${HOME}/${rel}"
 		mkdir -p "$(dirname "$dest")"
 		cp "$f" "$dest"
 		chmod 755 "$dest"
-	done
-fi
-
-find "$src_dir" -type f \
-	-not -path "${src_bin}/*" \
-	-not -path "$pi_settings_src" |
-	while read -r f; do
-		rel=${f#"${src_dir}/"}
-		case "$rel" in
-			.config/*) dest="${XDG_CONFIG_HOME}/${rel#.config/}" ;;
-			*) dest="${HOME}/${rel}" ;;
-		esac
-		copy_file "$f" "$dest"
-	done
-
-copy_tree "${src_lib}" "${HOME}/lib"
+		continue
+		;;
+	etc/config/*) dest="${XDG_CONFIG_HOME}/${rel#etc/config/}" ;;
+	etc/*) dest="${HOME}/.${rel#etc/}" ;;
+	*) dest="${HOME}/${rel}" ;;
+	esac
+	copy_file "$f" "$dest"
+done
 
 if command -v tic >/dev/null 2>&1; then
-	for t in "${src_include}"/*.terminfo; do
+	for t in "${include_dir}"/*.terminfo; do
 		[ -f "$t" ] && tic -o "$HOME/.terminfo" -x "$t"
 	done
 fi
@@ -67,8 +60,7 @@ gitconfig="${XDG_CONFIG_HOME}/git/config"
 
 repo_dir="/workspaces/${GITHUB_REPOSITORY#*/}"
 mkdir -p "${repo_dir}/.github"
-ln -sfn "$(realpath "${HOME}/lib/AGENT.md")" \
-	"${repo_dir}/.github/copilot-instructions.md"
+ln -sfn "$(realpath "${HOME}/lib/AGENT.md")" "${repo_dir}/.github/copilot-instructions.md"
 
 sh "${dotfiles}/scripts/setup-vim.sh"
 sh "${dotfiles}/scripts/install-jira.sh"
@@ -85,9 +77,9 @@ if [ -f "$pi_settings_src" ]; then
 			mv "$tmp" "$pi_settings_dst"
 		else
 			rm -f "$tmp"
-			echo "warning: failed to merge ${pi_settings_dst}" >&2
+			printf '%s\n' "warning: failed to merge ${pi_settings_dst}" >&2
 		fi
 	else
-		echo "warning: jq not found; leaving ${pi_settings_dst} unmerged" >&2
+		printf '%s\n' "warning: jq not found; leaving ${pi_settings_dst} unmerged" >&2
 	fi
 fi

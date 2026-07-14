@@ -107,7 +107,7 @@ case $- in
 
 	ppre=':'
 	psuf='; '
-	pinfo="${P:+${P}:}"'$(_pwdinfo)'
+	pinfo="${p:+${p}:}"'$(_pwdinfo)'
 	pbell='\[\e]0;'${pinfo}'\a\]'
 	pfull="${u:+${u}@}"${pinfo}
 	pdumb=${ppre}${pfull}${psuf}

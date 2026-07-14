@@ -86,4 +86,4 @@
 	smudge = git-lfs smudge -- %f
 
 [include]
-	path = ~/.config/git/work.conf
+	path = ~/.config/git/local.conf

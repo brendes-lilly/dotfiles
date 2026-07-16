@@ -15,5 +15,3 @@
 log.err
 log.out*
 metals.sbt
-
-**/.claude/settings.local.json

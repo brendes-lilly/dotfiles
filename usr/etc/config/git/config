@@ -12,6 +12,9 @@
 		--format='%(authordate:iso8601) %(refname:short) %(authoremail)' refs/heads/ \
 		| awk -v email=\"$(git config user.email)\" '(email!=\"\" && index($0,email))' \
 		| column -t
+	nolfs = !git -c filter.lfs.smudge= \
+		-c filter.lfs.process= \
+		-c filter.lfs.required=false
 	nuke = update-index --force-remove
 	orphans = ls-files --others
 	s = status -sb
@@ -87,3 +90,9 @@
 
 [include]
 	path = ~/.config/git/local.conf
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential

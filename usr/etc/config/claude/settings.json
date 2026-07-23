@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(obsidian --help)",
+      "Bash(obsidian status *)",
+      "Bash(obsidian --version)",
+      "Bash(obsidian list-vaults *)",
+      "Bash(xargs ls -la)",
+      "Bash(grep -E \"\\\\.py$\")"
+    ]
+  },
+  "worktree": {
+    "baseRef": "fresh"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "sh ~/.config/claude/statusline-command.sh"
+  },
+  "effortLevel": "high",
+  "tui": "fullscreen",
+  "theme": "auto",
+  "editorMode": "vim",
+  "preferredNotifChannel": "auto",
+  "autoCompactEnabled": true,
+  "useAutoModeDuringPlan": true
+}

@@ -28,6 +28,8 @@ etc/bash_profile
 etc/bashrc
 etc/profile
 etc/zshenv
+etc/config/claude/settings.json
+etc/config/claude/statusline-command.sh
 etc/config/git/config
 etc/config/git/ignore
 etc/config/nvim/after/lsp/lua_ls.lua
